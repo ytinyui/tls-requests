@@ -57,10 +57,10 @@ it combines ease of use with advanced functionality for secure networking.
 
 Modern websites increasingly use **TLS Fingerprinting** and anti-bot tools like Cloudflare Bot Fight Mode to block web crawlers.
 
-**TLS Requests** bypasses these obstacles by mimicking browser-like TLS behaviors,
+**TLS Requests** bypass these obstacles by mimicking browser-like TLS behaviors,
 making it easy to scrape data or interact with websites that use sophisticated anti-bot measures.
 
-### Example: Unlocking Cloudflare Bot Fight Mode
+### Unlocking Cloudflare Bot Fight Mode
 ![coingecko.png](https://raw.githubusercontent.com/thewebscraping/tls-requests/refs/heads/main/docs/static/coingecko.png)
 
 **Example Code:**

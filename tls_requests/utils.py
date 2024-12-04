@@ -40,21 +40,6 @@ def get_logger(
     return logger
 
 
-def primitive_value_to_str(value) -> str:
-    """
-    Coerce a primitive data type into a string value.
-
-    Note that we prefer JSON-style 'true'/'false' for boolean values here.
-    """
-    if value is True:
-        return "true"
-    elif value is False:
-        return "false"
-    elif value is None:
-        return ""
-    return str(value)
-
-
 def to_bytes(value: Any, encoding: str = "utf-8", *, lower: bool = False) -> bytes:
     if isinstance(value, (bytes, bytearray)):
         return value
