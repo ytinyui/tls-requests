@@ -1,0 +1,46 @@
+site_name: TLS Requests
+site_description: A powerful and lightweight Python library for making secure and reliable HTTP/TLS Fingerprint requests.
+site_url: https://github.com/thewebscraping/
+
+theme:
+    name: 'material'
+    palette:
+      - scheme: 'default'
+        media: '(prefers-color-scheme: light)'
+        toggle:
+          icon: 'material/lightbulb'
+          name: "Switch to dark mode"
+      - scheme: 'slate'
+        media: '(prefers-color-scheme: dark)'
+        primary: 'blue'
+        toggle:
+          icon: 'material/lightbulb-outline'
+          name: 'Switch to light mode'
+
+repo_name: thewebscraping/tls-requests
+repo_url: https://github.com/thewebscraping/tls-requests/
+edit_uri: ""
+
+nav:
+    - Introduction: 'index.md'
+    - Quickstart Guide: 'quickstart.md'
+    - Advanced Topics:
+        - Client: 'advanced/client.md'
+        - Async Client: 'advanced/async_client.md'
+        - Authentication: 'advanced/authentication.md'
+        - Hooks: 'advanced/hooks.md'
+        - Proxies: 'advanced/proxies.md'
+    - TLS Client:
+        - Install: 'tls/install.md'
+        - Wrapper TLS Client: 'tls/index.md'
+        - TLS Client Profiles: 'tls/profiles.md'
+        - Custom TLS Client Configs: 'tls/configuration.md'
+
+markdown_extensions:
+  - admonition
+  - codehilite:
+      css_class: highlight
+  - mkautodoc
+
+extra_css:
+    - css/custom.css

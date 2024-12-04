@@ -1,5 +1,5 @@
 # TLS REQUESTS
-**A powerful and lightweight Python library for making secure and reliable HTTP/TLS Fingerprint requests.**
+**A powerful and lightweight Python library for making secure and reliable HTTP/TLS fingerprint requests.**
 
 * * *
 
@@ -20,8 +20,7 @@ pip install wrapper-tls-requests
 pip install git+https://github.com/thewebscraping/tls-requests.git
 ```
 
-**Quick Start**
----------------
+### Quick Start
 
 Start using TLS Requests with just a few lines of code:
 
@@ -34,14 +33,14 @@ Start using TLS Requests with just a few lines of code:
 200
 ```
 
+* * *
+
 **Introduction**
 ----------------
 
-**TLS Requests** is a cutting-edge HTTP client for Python, offering a feature-rich,
-highly configurable alternative to the popular [`requests`](https://github.com/psf/requests) library.
+**TLS Requests** is a cutting-edge HTTP client for Python, offering a feature-rich, highly configurable alternative to the popular [`requests`](https://github.com/psf/requests) library.
 
-Built on top of [`tls-client`](https://github.com/bogdanfinn/tls-client),
-it combines ease of use with advanced functionality for secure networking.
+It is built on top of [`tls-client`](https://github.com/bogdanfinn/tls-client), combining ease of use with advanced functionality for secure networking.
 
 **Acknowledgment**: A big thank you to all contributors for their support!
 
@@ -51,17 +50,19 @@ it combines ease of use with advanced functionality for secure networking.
 *   **Customizable TLS Clients:** Select specific TLS fingerprints to meet your needs.
 *   **Ideal for Developers:** Build scrapers, API clients, or other custom networking tools effortlessly.
 
+* * *
 
 **Why Use TLS Requests?**
 -------------------------
 
 Modern websites increasingly use **TLS Fingerprinting** and anti-bot tools like Cloudflare Bot Fight Mode to block web crawlers.
 
-**TLS Requests** bypasses these obstacles by mimicking browser-like TLS behaviors,
-making it easy to scrape data or interact with websites that use sophisticated anti-bot measures.
+**TLS Requests** bypasses these obstacles by mimicking browser-like TLS behaviors, making it easy to scrape data or interact with websites that use sophisticated anti-bot measures.
 
-### Example: Unlocking Cloudflare Bot Fight Mode
-![coingecko.png](https://raw.githubusercontent.com/thewebscraping/tls-requests/refs/heads/main/docs/static/coingecko.png)
+### Cloudflare Bot Fight Mode
+![coingecko.png](static/coingecko.png)
+
+### Unlock Content Behind Cloudflare Bot Fight Mode
 
 **Example Code:**
 
@@ -71,6 +72,7 @@ making it easy to scrape data or interact with websites that use sophisticated a
 >>> r
 <Response [200]>
 ```
+* * *
 
 **Key Features**
 ----------------
@@ -79,7 +81,7 @@ making it easy to scrape data or interact with websites that use sophisticated a
 
 *   **Browser-like TLS Fingerprinting**: Enables secure and reliable browser-mimicking connections.
 *   **High-Performance Backend**: Built on a Go-based HTTP backend for speed and efficiency.
-*   **Synchronous & Asynchronous Support**: Seamlessly switch between synchronous and asynchronous requests.
+*   **Synchronous & Asynchronous Support**: Seamlessly switch between synchronous and [asynchronous requests](advanced/async_client).
 *   **Protocol Support**: Fully compatible with HTTP/1.1 and HTTP/2.
 *   **Strict Timeouts**: Reliable timeout management for precise control over request durations.
 
@@ -94,19 +96,19 @@ making it easy to scrape data or interact with websites that use sophisticated a
 *   **File Uploads**: Simplified multipart file upload support.
 *   **Proxy Configuration**: Supports Socks5, HTTP, and HTTPS proxies for enhanced privacy.
 
+* * *
 
 **Documentation**
 -----------------
 
 Explore the full capabilities of TLS Requests in the documentation:
 
-*   **[Quickstart Guide](https://thewebscraping.github.io/tls-requests/quickstart/)**: A beginner-friendly guide.
-*   **[Advanced Topics](https://thewebscraping.github.io/tls-requests/advanced/client/)**: Learn to leverage specialized features.
-*   **[Async Support](https://thewebscraping.github.io/tls-requests/advanced/async_client/)**: Handle high-concurrency scenarios.
+*   **[Quickstart Guide](quickstart.md)**: A beginner-friendly guide.
+*   **Advanced Topics**: Learn to leverage specialized features.
+*   **[Async Support](advanced/async_client)**: Handle high-concurrency scenarios.
 *   **Custom TLS Configurations**:
-    *   **[Wrapper TLS Client](https://thewebscraping.github.io/tls-requests/tls/)**
-    *   **[TLS Client Profiles](https://thewebscraping.github.io/tls-requests/tls/profiles/)**
-    *   **[Custom TLS Configurations](https://thewebscraping.github.io/tls-requests/tls/configuration/)**
+    *   **[Wrapper TLS Client](tls/index)**
+    *   **[TLS Client Profiles](tls/profiles)**
+    *   **[Custom TLS Configurations](tls/configuration)**
 
-
-Read the documentation: [**thewebscraping.github.io/tls-requests/**](https://thewebscraping.github.io/tls-requests/)
+* * *
