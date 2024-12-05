@@ -33,7 +33,7 @@ The best practice is to use a `Client` as a context manager. This ensures connec
 
 ```python
 with tls_requests.Client() as client:
-    response = client.get("https://example.com")
+    response = client.get("https://httpbin.org/get")
     print(response)  # <Response [200 OK]>
 ```
 
@@ -44,7 +44,7 @@ If not using a context manager, ensure to close the client explicitly:
 ```python
 client = tls_requests.Client()
 try:
-    response = client.get("https://example.com")
+    response = client.get("https://httpbin.org/get")
     print(response)  # <Response [200 OK]>
 finally:
     client.close()
@@ -59,7 +59,7 @@ A `Client` can send requests using methods like `.get()`, `.post()`, etc.:
 
 ```python
 with tls_requests.Client() as client:
-    response = client.get("https://example.com")
+    response = client.get("https://httpbin.org/get")
     print(response)  # <Response [200 OK]>
 ```
 
@@ -70,7 +70,7 @@ To include custom headers in a request:
 ```python
 headers = {'X-Custom': 'value'}
 with tls_requests.Client() as client:
-    response = client.get("https://example.com", headers=headers)
+    response = client.get("https://httpbin.org/get", headers=headers)
     print(response.request.headers['X-Custom'])  # 'value'
 ```
 
@@ -101,7 +101,7 @@ When client-level and request-level options overlap:
 client_headers = {'X-Auth': 'client'}
 request_headers = {'X-Custom': 'request'}
 with tls_requests.Client(headers=client_headers) as client:
-    response = client.get("https://example.com", headers=request_headers)
+    response = client.get("https://httpbin.org/get", headers=request_headers)
     print(response.request.headers['X-Auth'])  # 'client'
     print(response.request.headers['X-Custom'])  # 'request'
 ```
@@ -110,7 +110,7 @@ with tls_requests.Client(headers=client_headers) as client:
 
 ```python
 with tls_requests.Client(auth=('user', 'pass')) as client:
-    response = client.get("https://example.com", auth=('admin', 'adminpass'))
+    response = client.get("https://httpbin.org/get", auth=('admin', 'adminpass'))
     print(response.request.headers['Authorization'])  # Encoded 'admin:adminpass'
 
 ```
@@ -123,7 +123,7 @@ Advanced Request Handling
 For more control, explicitly build and send `Request` instances:
 
 ```python
-request = tls_requests.Request("GET", "https://example.com")
+request = tls_requests.Request("GET", "https://httpbin.org/get")
 with tls_requests.Client() as client:
     response = client.send(request)
     print(response)  # <Response [200 OK]>
@@ -133,7 +133,7 @@ To combine client- and request-level configurations:
 
 ```python
 with tls_requests.Client(headers={"X-Client-ID": "ABC123"}) as client:
-    request = client.build_request("GET", "https://api.example.com")
+    request = client.build_request("GET", "https://httpbin.org/json")
     del request.headers["X-Client-ID"]  # Modify as needed
     response = client.send(request)
     print(response)

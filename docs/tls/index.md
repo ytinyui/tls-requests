@@ -48,7 +48,7 @@ Retrieves cookies associated with a session for a specific URL.
 ```pycon
 >>> from tls_requests import TLSClient
 >>> TLSClient.initialize()
->>> cookies = TLSClient.get_cookies(session_id="session123", url="https://example.com")
+>>> cookies = TLSClient.get_cookies(session_id="session123", url="https://httpbin.org/get")
 ```
 
 * * *
@@ -74,7 +74,7 @@ Adds cookies to a specific TLS session.
         "value": "baz2",
     }],
     "sessionId": "session123",
-    "url": "https://example.com",
+    "url": "https://httpbin.org/",
 }
 >>> TLSClient.add_cookies(session_id="session123", payload=payload)
 ```
@@ -138,7 +138,7 @@ Sends a request using the TLS library. Using [TLSConfig](configuration) to gener
 ```pycon
 >>> from tls_requests import TLSClient, TLSConfig
 >>> TLSClient.initialize()
->>> config = TLSConfig(requestMethod="GET", requestUrl="https://example.com")
+>>> config = TLSConfig(requestMethod="GET", requestUrl="https://httpbin.org/get")
 >>> response = TLSClient.request(config.to_dict())
 ```
 

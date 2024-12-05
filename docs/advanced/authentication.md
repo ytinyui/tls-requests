@@ -29,10 +29,13 @@ To customize how authentication is handled, you can use a function that modifies
         request.headers["X-Authorization"] = "123456"
         return request
 
->>> client = tls_requests.Client(auth=custom_auth)
->>> response = client.get("https://www.example.com/")
+>>> response = tls_requests.get("https://httpbin.org/headers", auth=custom_auth)
 >>> response
 <Response [200 OK]>
+>>> response.request.headers["X-Authorization"]
+'123456'
+>>> response.json()["headers"]["X-Authorization"]
+'123456'
 ```
 
 * * *
@@ -53,7 +56,7 @@ class BearerAuth(tls_requests.Auth):
         self.token = token
 
     def build_auth(self, request: tls_requests.Request) -> tls_requests.Request | None:
-        request.headers['Authorization'] = f"Bearer {self.token}"
+        request.headers["Authorization"] = f"Bearer {self.token}"
         return request
 ```
 
@@ -65,10 +68,13 @@ To use your custom `BearerAuth` implementation:
 
 ```pycon
 >>> auth = BearerAuth(token="your_jwt_token")
->>> client = tls_requests.Client(auth=auth)
->>> response = client.get("https://www.example.com/secure-endpoint")
+>>> response = tls_requests.get("https://httpbin.org/headers", auth=auth)
 >>> response
 <Response [200 OK]>
+>>> response.request.headers["Authorization"]
+'Bearer your_jwt_token'
+>>> response.json()["headers"]["Authorization"]
+'Bearer your_jwt_token'
 ```
 
 With these approaches, you can integrate various authentication strategies into your `tls_requests` workflow, whether built-in or custom-designed for specific needs.

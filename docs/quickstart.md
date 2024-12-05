@@ -109,6 +109,28 @@ Include lists or merge parameters with existing query strings:
 '<URL: https://httpbin.org/get?order_by=asc&key1=value1&key2=value2&key2=value3>'
 ```
 
+* * *
+
+Custom Headers
+--------------
+
+Add custom headers to requests:
+
+```pycon
+>>> url = 'https://httpbin.org/headers'
+>>> headers = {'user-agent': 'my-app/1.0.0'}
+>>> r = tls_requests.get(url, headers=headers)
+>>> r.json()
+{
+  "headers": {
+    ...
+    "Host": "httpbin.org",
+    "User-Agent": "my-app/1.0.0",
+    ...
+  }
+}
+```
+
 
 * * *
 
@@ -160,28 +182,6 @@ Parse JSON responses directly:
     ...
   },
   ...
-}
-```
-
-* * *
-
-Custom Headers
---------------
-
-Add custom headers to requests:
-
-```pycon
->>> url = 'https://httpbin.org/headers'
->>> headers = {'user-agent': 'my-app/1.0.0'}
->>> r = tls_requests.get(url, headers=headers)
->>> r.json()
-{
-  "headers": {
-    ...
-    "Host": "httpbin.org",
-    "User-Agent": "my-app/1.0.0",
-    ...
-  }
 }
 ```
 
@@ -379,9 +379,6 @@ The `Headers` data type is case-insensitive, so you can use any capitalization.
 
 ```pycon
 >>> r.headers['Content-Type']
-'application/json'
-
->>> r.headers.get('content-type')
 'application/json'
 ```
 

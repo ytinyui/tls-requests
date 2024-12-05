@@ -25,7 +25,7 @@ To send asynchronous HTTP requests, use the `AsyncClient`:
 >>> import asyncio
 >>> async def fetch(url):
         async with tls_requests.AsyncClient() as client:
-            r = await client.get("https://www.example.com/")
+            r = await client.get(url)
             return r
 
 >>> r = asyncio.run(fetch("https://httpbin.org/get"))
@@ -87,7 +87,7 @@ import asyncio
 async def fetch(url):
     client = tls_requests.AsyncClient()
     try:
-        response = await client.get("https://www.example.com/")
+        response = await client.get("https://httpbin.org/get")
     finally:
         await client.aclose()
 ```

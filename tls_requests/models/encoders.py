@@ -102,7 +102,7 @@ class FileField(BaseField):
         self.filename, self._buffer, self.content_type = self.unpack(value)
 
     def unpack(self, value: RequestFileValue) -> tuple[str, BufferTypes, str]:
-        filename = content_type = None, None
+        filename, content_type = None, None
         if isinstance(value, tuple):
             if len(value) > 1:
                 filename, buffer, *args = value
