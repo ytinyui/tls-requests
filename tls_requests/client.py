@@ -9,7 +9,7 @@ from typing import (Any, Callable, Literal, Mapping, Optional, Sequence,
                     TypeVar, Union)
 
 from .exceptions import RemoteProtocolError, TooManyRedirects
-from .models import (URL, BasicAuth, Cookies, Headers, Proxy, Request,
+from .models import (URL, Auth, BasicAuth, Cookies, Headers, Proxy, Request,
                      Response, StatusCodes, TLSClient, TLSConfig, URLParams)
 from .settings import (DEFAULT_FOLLOW_REDIRECTS, DEFAULT_HEADERS,
                        DEFAULT_MAX_REDIRECTS, DEFAULT_TIMEOUT,
@@ -166,12 +166,15 @@ class BaseClient:
     ) -> Union[Request, Any]:
         """Build Auth Request instance"""
 
-        if isinstance(self.auth, tuple) and len(self.auth) == 2:
-            auth = BasicAuth(self.auth[0], self.auth[1])
+        if isinstance(auth, tuple) and len(auth) == 2:
+            auth = BasicAuth(auth[0], auth[1])
             return auth.build_auth(request)
 
-        if callable(self.auth):
-            return self.auth(request)
+        if callable(auth):
+            return auth(request)
+
+        if isinstance(auth, Auth):
+            return auth.build_auth(request)
 
     def prepare_headers(self, headers: HeaderTypes = None) -> Headers:
         """Prepare Headers"""
@@ -265,7 +268,7 @@ class BaseClient:
         if isinstance(request_hooks, Sequence):
             for hook in request_hooks:
                 if callable(hook):
-                    return hook(request)
+                    return hook(response)
 
     def _rebuild_hooks(self, hooks: HookTypes):
         if isinstance(hooks, dict):
@@ -355,10 +358,6 @@ class BaseClient:
                     return self._send(response.next, history=history, start=start)
 
         response.history = history
-        response_ = self.build_hook_response(response)
-        if isinstance(response_, Response):
-            response = response_
-
         return response
 
     def close(self) -> None:
@@ -476,7 +475,7 @@ class Client(BaseClient):
 
         self._state = ClientState.OPENED
         for fn in [self.prepare_auth, self.build_hook_request]:
-            request_ = fn(request, auth, follow_redirects)
+            request_ = fn(request, auth or self.auth, follow_redirects)
             if isinstance(request_, Request):
                 request = request_
 
@@ -485,7 +484,14 @@ class Client(BaseClient):
             request,
             start=time.perf_counter(),
         )
-        response.read()
+
+        if self.hooks.get("response"):
+            response_ = self.build_hook_response(response)
+            if isinstance(response_, Response):
+                response = response_
+        else:
+            response.read()
+
         response.close()
         return response
 
@@ -761,8 +767,24 @@ class AsyncClient(BaseClient):
             raise RuntimeError("Cannot send a request, as the client has been closed.")
 
         self._state = ClientState.OPENED
-        response = self._send(request, start=time.perf_counter())
-        await response.aread()
+        for fn in [self.prepare_auth, self.build_hook_request]:
+            request_ = fn(request, auth or self.auth, follow_redirects)
+            if isinstance(request_, Request):
+                request = request_
+
+        self.follow_redirects = follow_redirects
+        response = self._send(
+            request,
+            start=time.perf_counter(),
+        )
+
+        if self.hooks.get("response"):
+            response_ = self.build_hook_response(response)
+            if isinstance(response_, Response):
+                response = response_
+        else:
+            await response.aread()
+
         await response.aclose()
         return response
 

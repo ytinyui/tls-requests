@@ -19,7 +19,7 @@ To route traffic through an HTTP proxy, specify the proxy URL in the `proxy` par
 
 ```python
 with tls_requests.Client(proxy="http://localhost:8030") as client:
-    response = client.get("https://example.com")
+    response = client.get("https://httpbin.org/get")
     print(response)  # <Response [200 OK]>
 
 ```
@@ -30,7 +30,7 @@ For SOCKS proxies, use the `socks5` scheme in the proxy URL:
 
 ```python
 client = tls_requests.Client(proxy="socks5://user:pass@host:port")
-response = client.get("https://example.com")
+response = client.get("https://httpbin.org/get")
 print(response)  # <Response [200 OK]>
 ```
 
@@ -47,7 +47,7 @@ You can include proxy credentials in the `userinfo` section of the URL:
 
 ```python
 with tls_requests.Client(proxy="http://username:password@localhost:8030") as client:
-    response = client.get("https://example.com")
+    response = client.get("https://httpbin.org/get")
     print(response)  # <Response [200 OK]>
 ```
 
