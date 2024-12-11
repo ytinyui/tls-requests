@@ -4,7 +4,7 @@ Type definitions for type checking purposes.
 
 from http.cookiejar import CookieJar
 from typing import (IO, TYPE_CHECKING, Any, BinaryIO, Callable, List, Literal,
-                    Mapping, Optional, Sequence, Tuple, TypeAlias, Union)
+                    Mapping, Optional, Sequence, Tuple, Union)
 from uuid import UUID
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -43,7 +43,7 @@ TLSSession = Union["TLSSession", None]
 TLSSessionId = Union[str, UUID]
 TLSPayload = Union[dict, str, bytes, bytearray]
 TLSCookiesTypes = Optional[List[dict[str, str]]]
-TLSIdentifierTypes: TypeAlias = Literal[
+TLSIdentifierTypes = Literal[
     "chrome_103",
     "chrome_104",
     "chrome_105",

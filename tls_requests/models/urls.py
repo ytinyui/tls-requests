@@ -7,8 +7,8 @@ from urllib.parse import ParseResult, quote, unquote, urlencode, urlparse
 
 import idna
 
-from ..exceptions import URLError, URLParamsError
-from ..types import URL_ALLOWED_PARAMS, URLParamTypes
+from tls_requests.exceptions import ProxyError, URLError, URLParamsError
+from tls_requests.types import URL_ALLOWED_PARAMS, URLParamTypes
 
 __all__ = ["URL", "URLParams", "Proxy"]
 
@@ -91,7 +91,7 @@ class URLParams(Mapping, ABC):
         return params
 
     def normalize(self, s: URL_ALLOWED_PARAMS):
-        if not isinstance(s, URL_ALLOWED_PARAMS):
+        if not isinstance(s, (str, bytes, int, float, bool)):
             raise URLParamsError("Invalid parameters value type.")
 
         if isinstance(s, bool):
@@ -274,7 +274,7 @@ class Proxy(URL):
     def scheme(self) -> str:
         if self._scheme is None:
             if str(self.parsed.scheme).lower() not in self.ALLOWED_SCHEMES:
-                raise ValueError("Invalid scheme.")
+                raise ProxyError("Invalid scheme.")
 
             self._scheme = self.parsed.scheme
 

@@ -1,14 +1,14 @@
 from abc import ABC
 from collections.abc import Mapping, MutableMapping
 from enum import Enum
-from typing import Any, ItemsView, KeysView, Literal, TypeAlias, ValuesView
+from typing import Any, ItemsView, KeysView, Literal, ValuesView
 
-from ..types import ByteOrStr, HeaderTypes
-from ..utils import to_str
+from tls_requests.types import ByteOrStr, HeaderTypes
+from tls_requests.utils import to_str
 
 __all__ = ["Headers"]
 
-HeaderAliasTypes: TypeAlias = Literal["*", "lower", "capitalize"]
+HeaderAliasTypes = Literal["*", "lower", "capitalize"]
 
 
 class HeaderAlias(str, Enum):
@@ -156,5 +156,5 @@ class Headers(MutableMapping, ABC):
         ]
         return "<%s: %s>" % (
             self.__class__.__name__,
-            {"[secure]" if k in SECURE else k: ",".join(v) for k, v in self._items},
+            {k: "[secure]" if k in SECURE else ",".join(v) for k, v in self._items},
         )

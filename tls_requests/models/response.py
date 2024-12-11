@@ -3,16 +3,16 @@ import datetime
 from email.message import Message
 from typing import Any, Callable, Optional, TypeVar, Union
 
-from ..exceptions import HTTPError
-from ..settings import CHUNK_SIZE
-from ..types import CookieTypes, HeaderTypes, ResponseHistory
-from ..utils import chardet, to_json
-from .cookies import Cookies
-from .encoders import StreamEncoder
-from .headers import Headers
-from .request import Request
-from .status_codes import StatusCodes
-from .tls import TLSResponse
+from tls_requests.exceptions import HTTPError
+from tls_requests.models.cookies import Cookies
+from tls_requests.models.encoders import StreamEncoder
+from tls_requests.models.headers import Headers
+from tls_requests.models.request import Request
+from tls_requests.models.status_codes import StatusCodes
+from tls_requests.models.tls import TLSResponse
+from tls_requests.settings import CHUNK_SIZE
+from tls_requests.types import CookieTypes, HeaderTypes, ResponseHistory
+from tls_requests.utils import chardet, to_json
 
 __all__ = ["Response"]
 
@@ -129,7 +129,7 @@ class Response:
         return self._text
 
     @property
-    def charset(self) -> str | None:
+    def charset(self) -> Optional[str]:
         if self.headers.get("Content-Type"):
             msg = Message()
             msg["content-type"] = self.headers["Content-Type"]
@@ -216,6 +216,10 @@ class Response:
         with self.stream as stream:
             self._content = b"".join([chunk async for chunk in stream])
             return self._content
+
+    @property
+    def closed(self):
+        return self._is_closed
 
     def close(self) -> None:
         if not self._is_closed:

@@ -100,7 +100,7 @@ client.hooks = {
 Best Practices
 --------------
 
-1.  **Access Content**: Use `.read()` or `await read()` in asynchronous contexts to access `response.content` before returning it.
+1.  **Access Content**: Use `.read()` or `await .aread()` in asynchronous contexts to access `response.content` before returning it.
 2.  **Always Use Lists:** Hooks must be registered as **lists of callables**, even if you are adding only one function.
 3.  **Combine Hooks:** You can register multiple hooks for the same event type to handle various concerns, such as logging and error handling.
 4.  **Order Matters:** Hooks are executed in the order they are registered.
