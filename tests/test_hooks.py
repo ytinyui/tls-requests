@@ -25,7 +25,7 @@ def test_request_hook(httpserver: HTTPServer):
 
 def test_request_hook_no_return(httpserver: HTTPServer):
     httpserver.expect_request("/hooks").respond_with_data(b"OK")
-    _ = tls_requests.get(httpserver.url_for("/hooks"), hooks={"request": [log_request_no_return]})
+    response = tls_requests.get(httpserver.url_for("/hooks"), hooks={"request": [log_request_no_return]})
     assert response.status_code == 200
     assert response.request.headers.get("X-Hook") == "123456"
 
