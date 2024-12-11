@@ -51,6 +51,10 @@ class URLError(HTTPError):
     pass
 
 
+class ProxyError(HTTPError):
+    pass
+
+
 class URLParamsError(URLError):
     pass
 

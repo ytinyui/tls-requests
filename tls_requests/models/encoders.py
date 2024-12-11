@@ -5,9 +5,9 @@ from mimetypes import guess_type
 from typing import Any, AsyncIterator, Iterator, Mapping, TypeVar
 from urllib.parse import urlencode
 
-from ..types import (BufferTypes, ByteOrStr, RequestData, RequestFiles,
-                     RequestFileValue, RequestJson)
-from ..utils import to_bytes, to_str
+from tls_requests.types import (BufferTypes, ByteOrStr, RequestData,
+                                RequestFiles, RequestFileValue, RequestJson)
+from tls_requests.utils import to_bytes, to_str
 
 __all__ = [
     "JsonEncoder",

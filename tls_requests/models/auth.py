@@ -1,7 +1,7 @@
 from base64 import b64encode
 from typing import Any, Union
 
-from .request import Request
+from tls_requests.models.request import Request
 
 
 class Auth:

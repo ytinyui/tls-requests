@@ -1,5 +1,5 @@
-# TLS REQUESTS
-**A powerful and lightweight Python library for making secure and reliable HTTP/TLS Fingerprint requests.**
+# TLS Requests
+TLS Requests is a powerful Python library for secure HTTP requests, offering browser-like TLS fingerprinting, anti-bot bypassing, and high performance.
 
 * * *
 

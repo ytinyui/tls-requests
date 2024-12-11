@@ -1,12 +1,13 @@
 from typing import Any
 
-from ..settings import DEFAULT_TIMEOUT
-from ..types import (CookieTypes, HeaderTypes, MethodTypes, RequestData,
-                     RequestFiles, TimeoutTypes, URLParamTypes, URLTypes)
-from .cookies import Cookies
-from .encoders import StreamEncoder
-from .headers import Headers
-from .urls import URL
+from tls_requests.models.cookies import Cookies
+from tls_requests.models.encoders import StreamEncoder
+from tls_requests.models.headers import Headers
+from tls_requests.models.urls import URL
+from tls_requests.settings import DEFAULT_TIMEOUT
+from tls_requests.types import (CookieTypes, HeaderTypes, MethodTypes,
+                                RequestData, RequestFiles, TimeoutTypes,
+                                URLParamTypes, URLTypes)
 
 __all__ = ["Request"]
 

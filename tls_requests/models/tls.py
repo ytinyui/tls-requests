@@ -4,14 +4,15 @@ from dataclasses import asdict, dataclass, field
 from dataclasses import fields as get_fields
 from typing import Any, Optional, TypeVar, Union
 
-from ..settings import (DEFAULT_HEADERS, DEFAULT_TIMEOUT, DEFAULT_TLS_DEBUG,
-                        DEFAULT_TLS_HTTP2, DEFAULT_TLS_IDENTIFIER)
-from ..types import (MethodTypes, TLSCookiesTypes, TLSIdentifierTypes,
-                     TLSSessionId, URLTypes)
-from ..utils import to_base64, to_bytes, to_json
-from .encoders import StreamEncoder
-from .libraries import TLSLibrary
-from .status_codes import StatusCodes
+from tls_requests.models.encoders import StreamEncoder
+from tls_requests.models.libraries import TLSLibrary
+from tls_requests.models.status_codes import StatusCodes
+from tls_requests.settings import (DEFAULT_HEADERS, DEFAULT_TIMEOUT,
+                                   DEFAULT_TLS_DEBUG, DEFAULT_TLS_HTTP2,
+                                   DEFAULT_TLS_IDENTIFIER)
+from tls_requests.types import (MethodTypes, TLSCookiesTypes,
+                                TLSIdentifierTypes, TLSSessionId, URLTypes)
+from tls_requests.utils import to_base64, to_bytes, to_json
 
 __all__ = [
     "TLSClient",
@@ -158,7 +159,7 @@ class TLSClient:
         return cls.response(fn(to_bytes(payload)))
 
 
-@dataclass(kw_only=True)
+@dataclass
 class _BaseConfig:
     """Base configuration for TLSSession"""
 
@@ -182,7 +183,7 @@ class _BaseConfig:
         return self.to_dict()
 
 
-@dataclass(kw_only=True)
+@dataclass
 class TLSResponse(_BaseConfig):
     """TLS Response
 
@@ -229,7 +230,7 @@ class TLSResponse(_BaseConfig):
         return "<Response [%d]>" % self.status
 
 
-@dataclass(kw_only=True)
+@dataclass
 class TLSRequestCookiesConfig(_BaseConfig):
     """
     Request Cookies Configuration
@@ -255,7 +256,7 @@ class TLSRequestCookiesConfig(_BaseConfig):
     value: str
 
 
-@dataclass(kw_only=True)
+@dataclass
 class CustomTLSClientConfig(_BaseConfig):
     """
     Custom TLS Client Configuration
@@ -341,7 +342,7 @@ class CustomTLSClientConfig(_BaseConfig):
     supportedVersions: list[str] = None
 
 
-@dataclass(kw_only=True)
+@dataclass
 class TLSConfig(_BaseConfig):
     """TLS Configuration
 
@@ -424,7 +425,7 @@ class TLSConfig(_BaseConfig):
     requestMethod: MethodTypes = None
     requestUrl: Optional[str] = None
     sessionId: str = field(default_factory=lambda: str(uuid.uuid4()))
-    timeoutSeconds: int = 10
+    timeoutSeconds: int = 30
     tlsClientIdentifier: Optional[TLSIdentifierTypes] = DEFAULT_TLS_IDENTIFIER
     withDebug: bool = False
     withDefaultCookieJar: bool = False
@@ -482,7 +483,7 @@ class TLSConfig(_BaseConfig):
                 isByteRequest=is_byte_request,
                 proxyUrl=proxy,
                 forceHttp1=not http2,
-                timeoutSeconds=None,
+                timeoutSeconds=timeout,
                 insecureSkipVerify=not verify,
                 tlsClientIdentifier=tls_identifier,
                 withDebug=tls_debug,
