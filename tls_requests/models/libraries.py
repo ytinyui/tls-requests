@@ -15,8 +15,13 @@ __all__ = ["TLSLibrary"]
 
 BIN_DIR = os.path.join(Path(__file__).resolve(strict=True).parent.parent / "bin")
 GITHUB_API_URL = "https://api.github.com/repos/bogdanfinn/tls-client/releases"
+OS_PLATFORM = platform
+OS_MACHINE = machine()
+if OS_PLATFORM == "linux" and OS_MACHINE == "x86_64":
+    OS_MACHINE = "amd64"
+
 PATTERN_RE = re.compile(
-    r"xgo[a-zA-Z0-9.-]+%s-%s\.(so|dll|dylib)" % (platform, machine()), re.I
+    r"[a-zA-Z0-9.-]+%s-%s\.(so|dll|dylib)" % (OS_PLATFORM, OS_MACHINE), re.I
 )
 
 
@@ -58,6 +63,7 @@ class Release(BaseRelease):
 class TLSLibrary:
     @classmethod
     def fetch_api(cls, version: str = None, retries: int = 3):
+
         for _ in range(retries):
             try:
                 response = requests.get(GITHUB_API_URL)
@@ -70,14 +76,16 @@ class TLSLibrary:
                         asset
                         for release in releases
                         for asset in release.assets
-                        if "xgo" in str(asset.browser_download_url)
+                        if PATTERN_RE.search(asset.browser_download_url)
                     ]
                     if version is not None:
                         for asset in assets:
                             if str(version) == asset.name:
-                                return [asset.browser_download_url]
+                                yield asset.browser_download_url
 
-                    return [asset.browser_download_url for asset in assets]
+                    for asset in assets:
+                        yield asset.browser_download_url
+
             except Exception as e:
                 print("Unable to fetch GitHub API: %s" % e)
 
@@ -96,11 +104,12 @@ class TLSLibrary:
     @classmethod
     def download(cls, version: str = None) -> str:
         try:
+            print("System Info - Platform: %s, Machine: %s." % (OS_PLATFORM, OS_MACHINE))
             download_url = None
             for download_url in cls.fetch_api(version):
-                if PATTERN_RE.search(download_url):
-                    break
+                break
 
+            print("Library Download URL: %s" % download_url)
             if download_url:
                 destination = os.path.join(BIN_DIR, download_url.split("/")[-1])
                 with requests.get(download_url, stream=True) as response:

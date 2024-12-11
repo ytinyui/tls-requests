@@ -1,5 +1,6 @@
 .PHONY: docs
 init:
+	python -m pip install --upgrade pip
 	python -m pip install -r requirements-dev.txt
 
 test:
@@ -14,6 +15,9 @@ lint:
 	python -m isort tls_requests
 	python -m flake8 tls_requests
 
+pytest:
+	python -m pytest tests
+
 coverage:
 	python -m pytest --cov-config .coveragerc --verbose --cov-report term --cov-report xml --cov=tls_requests tests
 
@@ -25,11 +29,11 @@ publish-test-pypi:
 	python -m pip install 'twine>=6.0.1'
 	python setup.py sdist bdist_wheel
 	twine upload --repository testpypi dist/*
-	rm -rf build dist .egg *.egg-info
+	rm -rf build dist .egg wrapper_tls_requests.egg-info
 
 publish-pypi:
 	python -m pip install -r requirements-dev.txt
 	python -m pip install 'twine>=6.0.1'
 	python setup.py sdist bdist_wheel
 	twine upload dist/*
-	rm -rf build dist .egg *.egg-info
+	rm -rf build dist .egg wrapper_tls_requests.egg-info
