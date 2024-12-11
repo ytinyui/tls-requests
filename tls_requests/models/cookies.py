@@ -10,7 +10,7 @@ from http.cookies import Morsel
 from typing import TYPE_CHECKING, Iterator, MutableMapping
 from urllib.parse import urlparse, urlunparse
 
-from ..exceptions import CookieConflictError
+from tls_requests.exceptions import CookieConflictError
 
 if TYPE_CHECKING:
     from .request import Request

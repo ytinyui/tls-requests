@@ -93,6 +93,7 @@ def request(
             headers=headers,
             auth=auth,
             follow_redirects=follow_redirects,
+            timeout=timeout,
         )
 
 

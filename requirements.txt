@@ -2,22 +2,4 @@
 chardet~=5.2.0
 requests~=2.32.3
 tqdm~=4.67.1
-
-# Documentation
-mkdocs==1.6.1
-mkautodoc==0.2.0
-mkdocs-material==9.5.39
-
-# Packaging
-setuptools~=75.3.0
-twine~=6.0.1
-
-# Tests & Linting
-pre-commit==3.7.0
-black==24.3.0
-flake8==7.0.0
-coverage[toml]==7.6.1
-pre-commit==3.7.0
-isort==5.13.2
-mypy==1.11.2
-pytest==8.3.3
+idna~=3.10

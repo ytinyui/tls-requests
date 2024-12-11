@@ -313,7 +313,7 @@ class BaseClient:
         except KeyError:
             raise RemoteProtocolError("Invalid URL in Location headers: %s" % e)
 
-        for missing_field in ["scheme", "host", "fragment"]:
+        for missing_field in ["scheme", "host", "port", "fragment"]:
             private_field = "_%s" % missing_field
             if not getattr(url, private_field, None):
                 setattr(url, private_field, getattr(request.url, private_field, ""))
