@@ -8,7 +8,6 @@ if TYPE_CHECKING:
 __all__ = [
     "CookieConflictError",
     "HTTPError",
-    "HTTPStatusError",
     "URLError",
     "RemoteProtocolError",
     "ProtocolError",
@@ -38,13 +37,12 @@ class TooManyRedirects(HTTPError):
     """Too Many Redirects."""
 
 
-# Client errors
 class TLSError(HTTPError):
     """TLS Error"""
 
 
-class HTTPStatusError(HTTPError):
-    """HTTP Status Error"""
+class Base64DecodeError(HTTPError):
+    """Base64 Decode Error"""
 
 
 class URLError(HTTPError):

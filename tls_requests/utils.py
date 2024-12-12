@@ -3,8 +3,7 @@ from __future__ import annotations
 import base64
 import importlib
 import logging
-import typing
-from typing import Any, Union
+from typing import Any, AnyStr, Union
 
 FORMAT = "%(levelname)s:%(asctime)s:%(_name)s:%(funcName)s:%(lineno)d >>> %(message)s"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
@@ -74,15 +73,17 @@ def to_str(
     return str(value)
 
 
-def to_base64(value: Union[dict, str, bytes], encoding: str = "utf-8") -> typing.AnyStr:
+def to_base64(value: Union[dict, str, bytes], encoding: str = "utf-8") -> AnyStr:
     return base64.b64encode(to_bytes(value, encoding)).decode(encoding)
+
+
+def b64decode(value: AnyStr) -> bytes:
+    return base64.b64decode(value)
 
 
 def to_json(value: Union[str, bytes], encoding: str = "utf-8", **kwargs) -> dict:
     if isinstance(value, dict):
         return value
-    if isinstance(value, bytes):
-        value = value.decode(encoding, errors="ignore")
     try:
         json_data = jsonlib.loads(value, **kwargs)
         return json_data

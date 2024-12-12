@@ -21,7 +21,7 @@ if OS_PLATFORM == "linux" and OS_MACHINE == "x86_64":
     OS_MACHINE = "amd64"
 
 PATTERN_RE = re.compile(
-    r"[a-zA-Z0-9.-]+%s-%s\.(so|dll|dylib)" % (OS_PLATFORM, OS_MACHINE), re.I
+    r"%s-%s\.(so|dll|dylib)" % (OS_PLATFORM, OS_MACHINE), re.I
 )
 
 
@@ -72,16 +72,17 @@ class TLSLibrary:
                     releases = [
                         Release.from_kwargs(**kwargs) for kwargs in response_json
                     ]
+
+                    if version is not None:
+                        version = "v%s" % version if not str(version).startswith("v") else str(version)
+                        releases = [release for release in releases if version == release.name]
+
                     assets = [
                         asset
                         for release in releases
                         for asset in release.assets
                         if PATTERN_RE.search(asset.browser_download_url)
                     ]
-                    if version is not None:
-                        for asset in assets:
-                            if str(version) == asset.name:
-                                yield asset.browser_download_url
 
                     for asset in assets:
                         yield asset.browser_download_url
