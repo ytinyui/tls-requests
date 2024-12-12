@@ -14,5 +14,5 @@ DEFAULT_HEADERS = {
     "accept": "*/*",
     "connection": "keep-alive",
     "user-agent": f"Python-TLS-Requests/{__version__}",
-    "accept-encoding": "gzip, deflate, br",
+    "accept-encoding": "gzip, deflate, br, zstd",
 }

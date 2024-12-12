@@ -1,9 +1,10 @@
+import binascii
 import codecs
 import datetime
 from email.message import Message
 from typing import Any, Callable, Optional, TypeVar, Union
 
-from tls_requests.exceptions import HTTPError
+from tls_requests.exceptions import Base64DecodeError, HTTPError
 from tls_requests.models.cookies import Cookies
 from tls_requests.models.encoders import StreamEncoder
 from tls_requests.models.headers import Headers
@@ -12,7 +13,7 @@ from tls_requests.models.status_codes import StatusCodes
 from tls_requests.models.tls import TLSResponse
 from tls_requests.settings import CHUNK_SIZE
 from tls_requests.types import CookieTypes, HeaderTypes, ResponseHistory
-from tls_requests.utils import chardet, to_json
+from tls_requests.utils import b64decode, chardet, to_json
 
 __all__ = ["Response"]
 
@@ -231,10 +232,21 @@ class Response:
         return self.close()
 
     @classmethod
-    def from_tls_response(cls, response: TLSResponse) -> "Response":
+    def from_tls_response(cls, response: TLSResponse, is_byte_response: bool = False) -> "Response":
+        def _parse_response_body(value: Optional[str]) -> bytes:
+            if value:
+                if is_byte_response:
+                    try:
+                        value = b64decode(value.split(",")[-1])
+                        return value
+                    except (binascii.Error, AssertionError):
+                        raise Base64DecodeError("Couldn't decode the base64 string into bytes.")
+                return value.encode("utf-8")
+            return b""
+
         ret = cls(
             status_code=response.status,
-            body=response.body.encode("utf-8") if response.body else b"",
+            body=_parse_response_body(response.body),
             headers=response.headers,
             cookies=response.cookies,
         )

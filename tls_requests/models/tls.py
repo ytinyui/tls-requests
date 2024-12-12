@@ -418,6 +418,7 @@ class TLSConfig(_BaseConfig):
     headers: dict[str, str] = field(default_factory=dict)
     insecureSkipVerify: bool = False
     isByteRequest: bool = False
+    isByteResponse: bool = True
     isRotatingProxy: bool = False
     proxyUrl: str = ""
     requestBody: Union[str, bytes, bytearray, None] = None
