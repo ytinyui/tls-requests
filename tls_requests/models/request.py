@@ -3,11 +3,11 @@ from typing import Any
 from tls_requests.models.cookies import Cookies
 from tls_requests.models.encoders import StreamEncoder
 from tls_requests.models.headers import Headers
-from tls_requests.models.urls import URL
+from tls_requests.models.urls import URL, Proxy
 from tls_requests.settings import DEFAULT_TIMEOUT
 from tls_requests.types import (CookieTypes, HeaderTypes, MethodTypes,
-                                RequestData, RequestFiles, TimeoutTypes,
-                                URLParamTypes, URLTypes)
+                                ProxyTypes, RequestData, RequestFiles,
+                                TimeoutTypes, URLParamTypes, URLTypes)
 
 __all__ = ["Request"]
 
@@ -24,6 +24,7 @@ class Request:
         params: URLParamTypes = None,
         headers: HeaderTypes = None,
         cookies: CookieTypes = None,
+        proxy: ProxyTypes = None,
         timeout: TimeoutTypes = None,
     ) -> None:
         self._content = None
@@ -31,6 +32,7 @@ class Request:
         self.url = URL(url, params=params)
         self.method = method.upper()
         self.cookies = Cookies(cookies)
+        self.proxy = Proxy(proxy) if proxy else None
         self.timeout = timeout if isinstance(timeout, (float, int)) else DEFAULT_TIMEOUT
         self.stream = StreamEncoder(data, files, json)
         self.headers = self._prepare_headers(headers)

@@ -110,3 +110,15 @@ Explore the full capabilities of TLS Requests in the documentation:
 
 
 Read the documentation: [**thewebscraping.github.io/tls-requests/**](https://thewebscraping.github.io/tls-requests/)
+
+**Report Issues**
+-----------------
+
+Found a bug? Please [open an issue](https://github.com/thewebscraping/tls-requests/issues/).
+
+By reporting an issue you help improve the project.
+
+**Credits**
+-----------------
+
+Special thanks to [bogdanfinn](https://github.com/bogdanfinn/) for creating the awesome [tls-client](https://github.com/bogdanfinn/tls-client).
