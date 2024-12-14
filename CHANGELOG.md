@@ -1,6 +1,19 @@
 Release History
 ===============
 
+1.0.7 (2024-12-14)
+-------------------
+**Bugfixes:**
+
+- Fix URL.
+- Fix Proxy.
+
+1.0.6 (2024-12-12)
+-------------------
+**Bugfixes:**
+
+- Fix request file (image file, etc).
+
 1.0.5 (2024-12-11)
 -------------------
 **Bugfixes:**
