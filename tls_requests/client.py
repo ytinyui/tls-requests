@@ -8,7 +8,7 @@ from enum import Enum
 from typing import (Any, Callable, Literal, Mapping, Optional, Sequence,
                     TypeVar, Union)
 
-from .exceptions import RemoteProtocolError, TooManyRedirects
+from .exceptions import ProxyError, RemoteProtocolError, TooManyRedirects
 from .models import (URL, Auth, BasicAuth, Cookies, Headers, Proxy, Request,
                      Response, StatusCodes, TLSClient, TLSConfig, URLParams)
 from .settings import (DEFAULT_FOLLOW_REDIRECTS, DEFAULT_HEADERS,
@@ -105,7 +105,7 @@ class BaseClient:
         self._headers = Headers(headers)
         self._hooks = hooks if isinstance(hooks, dict) else {}
         self.auth = auth
-        self.proxy = Proxy(url=proxy) if isinstance(proxy, (str, URL)) else proxy
+        self.proxy = self.prepare_proxy(proxy)
         self.timeout = timeout
         self.follow_redirects = follow_redirects
         self.max_redirects = max_redirects
@@ -194,27 +194,23 @@ class BaseClient:
         merged_params = self.params.copy()
         return merged_params.update(params)
 
+    def prepare_proxy(self, proxy: ProxyTypes = None) -> Optional[Proxy]:
+        if proxy is not None:
+            if isinstance(proxy, (bytes, str, URL, Proxy)):
+                return Proxy(proxy)
+
+            raise ProxyError("Invalid proxy.")
+
     def prepare_config(self, request: Request):
         """Prepare TLS Config"""
 
-        proxy = None
-        if self.proxy and isinstance(self.proxy, Proxy):
-            proxy = self.proxy.url
-            if self.proxy.auth:
-                proxy = "%s://%s@%s:%s" % (
-                    self.proxy.url.scheme,
-                    ":".join(self.proxy.auth),
-                    self.proxy.url.host,
-                    self.proxy.url.port,
-                )
-
         config = self.config.copy_with(
             method=request.method,
-            url=str(request.url),
+            url=request.url,
             body=request.read(),
             headers=dict(request.headers),
             cookies=[dict(name=k, value=v) for k, v in request.cookies.items()],
-            proxy=proxy,
+            proxy=request.proxy.url if request.proxy else None,
             timeout=request.timeout,
             http2=True if self.http2 in ["auto", "http2", True, None] else False,
             verify=self.verify,
@@ -249,6 +245,7 @@ class BaseClient:
             params=self.prepare_params(params),
             headers=self.prepare_headers(headers),
             cookies=self.prepare_cookies(cookies),
+            proxy=self.proxy,
             timeout=timeout or self.timeout,
         )
 
@@ -313,15 +310,14 @@ class BaseClient:
         except KeyError:
             raise RemoteProtocolError("Invalid URL in Location headers: %s" % e)
 
-        for missing_field in ["scheme", "host", "port", "fragment"]:
-            private_field = "_%s" % missing_field
-            if not getattr(url, private_field, None):
-                setattr(url, private_field, getattr(request.url, private_field, ""))
+        if not url.netloc:
+            for missing_field in ["scheme", "host", "port"]:
+                setattr(url, missing_field, getattr(request.url, missing_field, ""))
 
         # TLS error transport between  HTTP/1.x -> HTTP/2
         if url.scheme != request.url.scheme:
             if request.url.scheme == "http":
-                url._scheme = request.url.scheme
+                url.scheme = request.url.scheme
             else:
                 if self.http2 in ["auto", None]:
                     self.session.destroy_session(self.config.sessionId)
@@ -331,6 +327,7 @@ class BaseClient:
                         "Switching remote scheme from HTTP/2 to HTTP/1 is not supported. Please initialize Client with parameter `http2` to `auto`."
                     )
 
+        setattr(url, "_url", None)  # reset url
         if not url.url:
             raise RemoteProtocolError("Invalid URL in Location headers: %s" % e)
 

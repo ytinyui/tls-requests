@@ -18,7 +18,8 @@ AuthTypes = Optional[
         "BasicAuth",
     ]
 ]
-URLTypes = Union["URL", str]
+URLTypes = Union["URL", str, bytes]
+ProxyTypes = Union[str, bytes, "Proxy", "URL"]
 URL_ALLOWED_PARAMS = Union[str, bytes, int, float, bool]
 URLParamTypes = Optional[
     Union[
@@ -128,8 +129,6 @@ CookieTypes = Optional[
 ]
 
 TimeoutTypes = Optional[Union[int, float]]
-ProxyTypes = Union["URL", str, "Proxy"]
-
 ByteOrStr = Union[bytes, str]
 BufferTypes = Union[IO[bytes], "BytesIO", "BufferedReader"]
 FileContent = Union[ByteOrStr, BinaryIO]
