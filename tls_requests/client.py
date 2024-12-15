@@ -339,7 +339,10 @@ class BaseClient:
         history = history if isinstance(history, list) else []
         start = start or time.perf_counter()
         config = self.prepare_config(request)
-        response = Response.from_tls_response(self.session.request(config.to_dict()), is_byte_response=config.isByteResponse)
+        response = Response.from_tls_response(
+            self.session.request(config.to_dict()),
+            is_byte_response=config.isByteResponse,
+        )
         response.request = request
         response.default_encoding = self.encoding
         response.elapsed = datetime.timedelta(seconds=time.perf_counter() - start)

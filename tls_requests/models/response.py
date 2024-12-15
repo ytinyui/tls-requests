@@ -232,7 +232,9 @@ class Response:
         return self.close()
 
     @classmethod
-    def from_tls_response(cls, response: TLSResponse, is_byte_response: bool = False) -> "Response":
+    def from_tls_response(
+        cls, response: TLSResponse, is_byte_response: bool = False
+    ) -> "Response":
         def _parse_response_body(value: Optional[str]) -> bytes:
             if value:
                 if is_byte_response:
@@ -240,7 +242,9 @@ class Response:
                         value = b64decode(value.split(",")[-1])
                         return value
                     except (binascii.Error, AssertionError):
-                        raise Base64DecodeError("Couldn't decode the base64 string into bytes.")
+                        raise Base64DecodeError(
+                            "Couldn't decode the base64 string into bytes."
+                        )
                 return value.encode("utf-8")
             return b""
 
