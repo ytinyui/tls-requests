@@ -1,5 +1,5 @@
 # TLS Requests
-TLS Requests is a powerful Python library for secure HTTP requests, offering browser-like TLS fingerprinting, anti-bot bypassing, and high performance.
+TLS Requests is a powerful Python library for secure HTTP requests, offering browser-like TLS fingerprinting, anti-bot page bypass, and high performance.
 
 * * *
 

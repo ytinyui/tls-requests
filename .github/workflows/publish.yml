@@ -1,0 +1,37 @@
+name: Upload Python Package to PyPI when a Release is Created
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  testpypi-publish:
+    name: Publish release to TestPyPI
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment:
+      name: pypi
+      url: https://pypi.org/p/wrapper-tls-requests
+    permissions:
+      id-token: write  # IMPORTANT: mandatory for sigstore
+    steps:
+      - name: Publish package to TestPyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.TEST_PYPI_API_TOKEN }}
+          repository-url: https://test.pypi.org/legacy/
+
+  pypi-publish:
+    name: Publish release to PyPI
+    needs: testpypi-publish
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/wrapper-tls-requests
+    permissions:
+      id-token: write  # IMPORTANT: mandatory for sigstore
+    steps:
+      - name: Publish package to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}

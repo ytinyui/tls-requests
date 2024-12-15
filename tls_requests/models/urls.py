@@ -160,7 +160,7 @@ class URL:
         - username (str): The username extracted from the URL.
 
     Methods:
-        - _prepare_url(url: Union[U, str, bytes]) -> str: Prepares and validates a URL string or bytes.
+        - _prepare(url: Union[U, str, bytes]) -> str: Prepares and validates a URL string or bytes to ParseResult.
         - _build(secure: bool = False) -> str: Constructs a URL string from its components.
 
     Raises:
@@ -190,7 +190,16 @@ class URL:
         'https://httpbin.org/get?key=value&key2=value2'
     """
 
-    __attrs__ = ("auth", "fragment", "host", "path", "password", "port", "scheme", "username")
+    __attrs__ = (
+        "auth",
+        "scheme",
+        "host",
+        "port",
+        "path",
+        "fragment",
+        "username",
+        "password",
+    )
 
     def __init__(self, url: URLTypes, params: URLParamTypes = None, **kwargs):
         self._parsed = self._prepare(url)
@@ -245,7 +254,9 @@ class URL:
     def _prepare(self, url: Union[T, str, bytes]) -> ParseResult:
         if isinstance(url, bytes):
             url = url.decode("utf-8")
-        elif isinstance(url, self.__class__) or issubclass(self.__class__, url.__class__):
+        elif isinstance(url, self.__class__) or issubclass(
+            self.__class__, url.__class__
+        ):
             url = str(url)
 
         if not isinstance(url, str):
@@ -255,6 +266,10 @@ class URL:
             setattr(self, attr, None)
 
         parsed = urlparse(url.lstrip())
+
+        self.auth = parsed.username, parsed.password
+        self.scheme = parsed.scheme
+
         try:
             self.host = idna.encode(parsed.hostname.lower()).decode("ascii")
         except AttributeError:
@@ -262,13 +277,6 @@ class URL:
         except idna.IDNAError:
             raise URLError("Invalid IDNA hostname.")
 
-        self.fragment = parsed.fragment
-        if parsed.username or parsed.password:
-            self.auth = parsed.username, parsed.password
-        else:
-            self.auth = None, None
-
-        self.path = parsed.path
         self.port = ""
         try:
             if parsed.port:
@@ -276,9 +284,10 @@ class URL:
         except ValueError as e:
             raise URLError("%s. port range must be 0 - 65535." % e.args[0])
 
-        self.scheme = parsed.scheme
-        self.password = parsed.password or ""
+        self.path = parsed.path
+        self.fragment = parsed.fragment
         self.username = parsed.username or ""
+        self.password = parsed.password or ""
         return parsed
 
     def _build(self, secure: bool = False) -> str:
@@ -348,7 +357,10 @@ class Proxy(URL):
 
             parsed = super(Proxy, self)._prepare(url)
             if str(parsed.scheme).lower() not in self.ALLOWED_SCHEMES:
-                raise ProxyError("Invalid proxy scheme `%s`. The allowed schemes are ('http', 'https', 'socks5', 'socks5h')." % parsed.scheme)
+                raise ProxyError(
+                    "Invalid proxy scheme `%s`. The allowed schemes are ('http', 'https', 'socks5', 'socks5h')."
+                    % parsed.scheme
+                )
 
             return urlparse("%s://%s" % (parsed.scheme, parsed.netloc))
         except URLError:

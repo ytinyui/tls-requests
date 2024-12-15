@@ -1,7 +1,10 @@
 .PHONY: docs
-init:
+init-actions:
 	python -m pip install --upgrade pip
 	python -m pip install -r requirements-dev.txt
+	python -m black tls_requests
+	python -m isort tls_requests
+	python -m flake8 tls_requests
 
 test:
 	tox -p
@@ -9,11 +12,6 @@ test:
 
 test-readme:
 	python setup.py check --restructuredtext --strict && ([ $$? -eq 0 ] && echo "README.rst and CHANGELOG.md ok") || echo "Invalid markup in README.md or CHANGELOG.md!"
-
-lint:
-	python -m black tls_requests
-	python -m isort tls_requests
-	python -m flake8 tls_requests
 
 pytest:
 	python -m pytest tests
