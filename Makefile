@@ -33,5 +33,5 @@ publish-pypi:
 	python -m pip install -r requirements-dev.txt
 	python -m pip install 'twine>=6.0.1'
 	python setup.py sdist bdist_wheel
-	twine upload dist/*
+	twine upload --skip-existing dist/*
 	rm -rf build dist .egg wrapper_tls_requests.egg-info
