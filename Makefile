@@ -26,7 +26,7 @@ publish-test-pypi:
 	python -m pip install -r requirements-dev.txt
 	python -m pip install 'twine>=6.0.1'
 	python setup.py sdist bdist_wheel
-	twine upload --repository testpypi dist/*
+	twine upload --repository testpypi --skip-existing dist/*
 	rm -rf build dist .egg wrapper_tls_requests.egg-info
 
 publish-pypi:

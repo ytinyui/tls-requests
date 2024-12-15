@@ -5,33 +5,22 @@ on:
     types: [created]
 
 jobs:
-  testpypi-publish:
-    name: Publish release to TestPyPI
+  publish:
+    name: Publish PyPI
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    environment:
-      name: pypi
-      url: https://pypi.org/p/wrapper-tls-requests
-    permissions:
-      id-token: write  # IMPORTANT: mandatory for sigstore
     steps:
-      - name: Publish package to TestPyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v4
         with:
-          password: ${{ secrets.TEST_PYPI_API_TOKEN }}
-          repository-url: https://test.pypi.org/legacy/
-
-  pypi-publish:
-    name: Publish release to PyPI
-    needs: testpypi-publish
-    runs-on: ubuntu-latest
-    environment:
-      name: pypi
-      url: https://pypi.org/p/wrapper-tls-requests
-    permissions:
-      id-token: write  # IMPORTANT: mandatory for sigstore
-    steps:
-      - name: Publish package to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          password: ${{ secrets.PYPI_API_TOKEN }}
+          python-version: '3.9'
+      - name: Install pypa/build
+        run: |
+          python -m pip install --upgrade pip
+          pip install setuptools wheel twine
+      - name: Build and publish
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+        run: |
+          python setup.py sdist bdist_wheel
+          twine upload dist/*
