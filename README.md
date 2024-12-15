@@ -1,4 +1,7 @@
 # TLS Requests
+
+[![CI/CD](https://github.com/thewebscraping/tls-requests/actions/workflows/ci.yml/badge.svg)](https://github.com/thewebscraping/tls-requests/actions/workflows/ci.yml)
+
 TLS Requests is a powerful Python library for secure HTTP requests, offering browser-like TLS fingerprinting, anti-bot page bypass, and high performance.
 
 * * *
