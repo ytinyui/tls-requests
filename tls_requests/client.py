@@ -479,11 +479,7 @@ class Client(BaseClient):
                 request = request_
 
         self.follow_redirects = follow_redirects
-        response = self._send(
-            request,
-            start=time.perf_counter(),
-            history=[]
-        )
+        response = self._send(request, start=time.perf_counter(), history=[])
 
         if self.hooks.get("response"):
             response_ = self.build_hook_response(response)
@@ -980,11 +976,7 @@ class AsyncClient(BaseClient):
                 request = request_
 
         self.follow_redirects = follow_redirects
-        response = await self._send(
-            request,
-            start=time.perf_counter(),
-            history=[]
-        )
+        response = await self._send(request, start=time.perf_counter(), history=[])
 
         if self.hooks.get("response"):
             response_ = self.build_hook_response(response)
@@ -1002,7 +994,8 @@ class AsyncClient(BaseClient):
         start = start or time.perf_counter()
         config = self.prepare_config(request)
         response = Response.from_tls_response(
-            await self.session.arequest(config.to_dict()), is_byte_response=config.isByteResponse,
+            await self.session.arequest(config.to_dict()),
+            is_byte_response=config.isByteResponse,
         )
         response.request = request
         response.default_encoding = self.encoding

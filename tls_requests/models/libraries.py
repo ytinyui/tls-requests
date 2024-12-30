@@ -132,42 +132,134 @@ class TLSLibrary:
     """
 
     _PATH: str = None
+    _STATIC_API_DATA = {
+        "name": "v1.7.10",
+        "tag_name": "v1.7.10",
+        "assets": [
+            {
+                "browser_download_url": "https://github.com/bogdanfinn/tls-client/releases/download/v1.7.10/tls-client-darwin-amd64-1.7.10.dylib",
+                "name": "tls-client-darwin-amd64-1.7.10.dylib",
+            },
+            {
+                "browser_download_url": "https://github.com/bogdanfinn/tls-client/releases/download/v1.7.10/tls-client-darwin-arm64-1.7.10.dylib",
+                "name": "tls-client-darwin-arm64-1.7.10.dylib",
+            },
+            {
+                "browser_download_url": "https://github.com/bogdanfinn/tls-client/releases/download/v1.7.10/tls-client-linux-arm64-1.7.10.so",
+                "name": "tls-client-linux-arm64-1.7.10.so",
+            },
+            {
+                "browser_download_url": "https://github.com/bogdanfinn/tls-client/releases/download/v1.7.10/tls-client-linux-armv7-1.7.10.so",
+                "name": "tls-client-linux-armv7-1.7.10.so",
+            },
+            {
+                "browser_download_url": "https://github.com/bogdanfinn/tls-client/releases/download/v1.7.10/tls-client-linux-ubuntu-amd64-1.7.10.so",
+                "name": "tls-client-linux-ubuntu-amd64-1.7.10.so",
+            },
+            {
+                "browser_download_url": "https://github.com/bogdanfinn/tls-client/releases/download/v1.7.10/tls-client-windows-32-1.7.10.dll",
+                "name": "tls-client-windows-32-1.7.10.dll",
+            },
+            {
+                "browser_download_url": "https://github.com/bogdanfinn/tls-client/releases/download/v1.7.10/tls-client-windows-64-1.7.10.dll",
+                "name": "tls-client-windows-64-1.7.10.dll",
+            },
+            {
+                "browser_download_url": "https://github.com/bogdanfinn/tls-client/releases/download/v1.7.10/tls-client-xgo-1.7.10-darwin-amd64.dylib",
+                "name": "tls-client-xgo-1.7.10-darwin-amd64.dylib",
+            },
+            {
+                "browser_download_url": "https://github.com/bogdanfinn/tls-client/releases/download/v1.7.10/tls-client-xgo-1.7.10-darwin-arm64.dylib",
+                "name": "tls-client-xgo-1.7.10-darwin-arm64.dylib",
+            },
+            {
+                "browser_download_url": "https://github.com/bogdanfinn/tls-client/releases/download/v1.7.10/tls-client-xgo-1.7.10-linux-386.so",
+                "name": "tls-client-xgo-1.7.10-linux-386.so",
+            },
+            {
+                "browser_download_url": "https://github.com/bogdanfinn/tls-client/releases/download/v1.7.10/tls-client-xgo-1.7.10-linux-amd64.so",
+                "name": "tls-client-xgo-1.7.10-linux-amd64.so",
+            },
+            {
+                "browser_download_url": "https://github.com/bogdanfinn/tls-client/releases/download/v1.7.10/tls-client-xgo-1.7.10-linux-arm-5.so",
+                "name": "tls-client-xgo-1.7.10-linux-arm-5.so",
+            },
+            {
+                "browser_download_url": "https://github.com/bogdanfinn/tls-client/releases/download/v1.7.10/tls-client-xgo-1.7.10-linux-arm-6.so",
+                "name": "tls-client-xgo-1.7.10-linux-arm-6.so",
+            },
+            {
+                "browser_download_url": "https://github.com/bogdanfinn/tls-client/releases/download/v1.7.10/tls-client-xgo-1.7.10-linux-arm-7.so",
+                "name": "tls-client-xgo-1.7.10-linux-arm-7.so",
+            },
+            {
+                "browser_download_url": "https://github.com/bogdanfinn/tls-client/releases/download/v1.7.10/tls-client-xgo-1.7.10-linux-arm64.so",
+                "name": "tls-client-xgo-1.7.10-linux-arm64.so",
+            },
+            {
+                "browser_download_url": "https://github.com/bogdanfinn/tls-client/releases/download/v1.7.10/tls-client-xgo-1.7.10-linux-ppc64le.so",
+                "name": "tls-client-xgo-1.7.10-linux-ppc64le.so",
+            },
+            {
+                "browser_download_url": "https://github.com/bogdanfinn/tls-client/releases/download/v1.7.10/tls-client-xgo-1.7.10-linux-riscv64.so",
+                "name": "tls-client-xgo-1.7.10-linux-riscv64.so",
+            },
+            {
+                "browser_download_url": "https://github.com/bogdanfinn/tls-client/releases/download/v1.7.10/tls-client-xgo-1.7.10-linux-s390x.so",
+                "name": "tls-client-xgo-1.7.10-linux-s390x.so",
+            },
+            {
+                "browser_download_url": "https://github.com/bogdanfinn/tls-client/releases/download/v1.7.10/tls-client-xgo-1.7.10-windows-386.dll",
+                "name": "tls-client-xgo-1.7.10-windows-386.dll",
+            },
+            {
+                "browser_download_url": "https://github.com/bogdanfinn/tls-client/releases/download/v1.7.10/tls-client-xgo-1.7.10-windows-amd64.dll",
+                "name": "tls-client-xgo-1.7.10-windows-amd64.dll",
+            },
+        ],
+    }
 
     @classmethod
     def fetch_api(cls, version: str = None, retries: int = 3):
+        def _find_release(data, version_: str = None):
+            releases = [
+                Release.from_kwargs(**kwargs) for kwargs in data
+            ]
+
+            if version_ is not None:
+                version_ = (
+                    "v%s" % version_
+                    if not str(version_).startswith("v")
+                    else str(version_)
+                )
+                releases = [
+                    release
+                    for release in releases
+                    if re.search(version_, release.name, re.I)
+                ]
+
+            for release in releases:
+                for asset in release.assets:
+                    if IS_UBUNTU and PATTERN_UBUNTU_RE.search(
+                        asset.browser_download_url
+                    ):
+                        ubuntu_urls.append(asset.browser_download_url)
+                    if PATTERN_RE.search(asset.browser_download_url):
+                        asset_urls.append(asset.browser_download_url)
+
         asset_urls, ubuntu_urls = [], []
         for _ in range(retries):
             try:
                 response = requests.get(GITHUB_API_URL)
                 if response.ok:
-                    response_json = response.json()
-                    releases = [
-                        Release.from_kwargs(**kwargs) for kwargs in response_json
-                    ]
-
-                    if version is not None:
-                        version = (
-                            "v%s" % version
-                            if not str(version).startswith("v")
-                            else str(version)
-                        )
-                        releases = [
-                            release
-                            for release in releases
-                            if re.search(version, release.name, re.I)
-                        ]
-
-                    for release in releases:
-                        for asset in release.assets:
-                            if IS_UBUNTU and PATTERN_UBUNTU_RE.search(
-                                asset.browser_download_url
-                            ):
-                                ubuntu_urls.append(asset.browser_download_url)
-                            if PATTERN_RE.search(asset.browser_download_url):
-                                asset_urls.append(asset.browser_download_url)
+                    _find_release(response.json())
+                    break
 
             except Exception as ex:
                 print("Unable to fetch GitHub API: %s" % ex)
+
+        if not asset_urls and not ubuntu_urls:
+            _find_release([cls._STATIC_API_DATA])
 
         for url in ubuntu_urls:
             yield url
@@ -183,14 +275,22 @@ class TLSLibrary:
 
     @classmethod
     def find_all(cls) -> list[str]:
-        return [src for src in glob.glob(os.path.join(BIN_DIR, r"*")) if src.lower().endswith(('so', 'dll', 'dylib'))]
+        return [
+            src
+            for src in glob.glob(os.path.join(BIN_DIR, r"*"))
+            if src.lower().endswith(("so", "dll", "dylib"))
+        ]
 
     @classmethod
     def download(cls, version: str = None) -> str:
         try:
             print(
                 "System Info - Platform: %s, Machine: %s, File Ext : %s."
-                % (PLATFORM, "%s (Ubuntu)" % MACHINE if IS_UBUNTU else MACHINE, FILE_EXT)
+                % (
+                    PLATFORM,
+                    "%s (Ubuntu)" % MACHINE if IS_UBUNTU else MACHINE,
+                    FILE_EXT,
+                )
             )
             download_url = None
             for download_url in cls.fetch_api(version):
