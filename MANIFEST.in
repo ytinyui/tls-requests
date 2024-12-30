@@ -1,4 +1,4 @@
 include LICENSE
 include README.md
 include CHANGELOG.md
-recursive-include tls_requests docs Makefile *.md *.rst
+recursive-include tls_requests docs Makefile *.md

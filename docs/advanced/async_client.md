@@ -23,14 +23,37 @@ To send asynchronous HTTP requests, use the `AsyncClient`:
 
 ```pycon
 >>> import asyncio
->>> async def fetch(url):
-        async with tls_requests.AsyncClient() as client:
-            r = await client.get(url)
-            return r
+>>> import random
+>>> import time
+>>> import tls_requests
+>>> async def fetch(idx, url):
+    async with tls_requests.AsyncClient() as client:
+        rand = random.uniform(0.1, 1.5)
+        start_time = time.perf_counter()
+        print("%s: Sleep for %.2f seconds." % (idx, rand))
+        await asyncio.sleep(rand)
+        response = await client.get(url)
+        end_time = time.perf_counter()
+        print("%s: Took: %.2f" % (idx, (end_time - start_time)))
+        return response
+>>> async def run(urls):
+        tasks = [asyncio.create_task(fetch(idx, url)) for idx, url in enumerate(urls)]
+        responses = await asyncio.gather(*tasks)
+        return responses
 
->>> r = asyncio.run(fetch("https://httpbin.org/get"))
+>>> start_urls = [
+    'https://httpbin.org/absolute-redirect/1',
+    'https://httpbin.org/absolute-redirect/2',
+    'https://httpbin.org/absolute-redirect/3',
+    'https://httpbin.org/absolute-redirect/4',
+    'https://httpbin.org/absolute-redirect/5',
+]
+
+
+>>> r = asyncio.run(run(start_urls))
 >>> r
-<Response [200 OK]>
+[<Response [200]>, <Response [200]>, <Response [200]>, <Response [200]>, <Response [200]>]
+
 ```
 
 !!! tip

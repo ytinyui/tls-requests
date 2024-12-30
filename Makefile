@@ -11,7 +11,7 @@ test:
 	rm -rf *.egg-info
 
 test-readme:
-	python setup.py check --restructuredtext --strict && ([ $$? -eq 0 ] && echo "README.rst and CHANGELOG.md ok") || echo "Invalid markup in README.md or CHANGELOG.md!"
+	python setup.py check --restructuredtext --strict && ([ $$? -eq 0 ] && echo "README.md and CHANGELOG.md ok") || echo "Invalid markup in README.md or CHANGELOG.md!"
 
 pytest:
 	python -m pytest tests
