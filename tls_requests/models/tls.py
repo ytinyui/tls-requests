@@ -155,8 +155,22 @@ class TLSClient:
         return response
 
     @classmethod
+    async def aresponse(cls, raw: bytes):
+        with StreamEncoder.from_bytes(raw) as stream:
+            content = b"".join([chunk async for chunk in stream])
+            return TLSResponse.from_kwargs(**to_json(content))
+
+    @classmethod
+    async def arequest(cls, payload):
+        return await cls._aread(cls._request, payload)
+
+    @classmethod
     def _send(cls, fn: callable, payload: dict):
         return cls.response(fn(to_bytes(payload)))
+
+    @classmethod
+    async def _aread(cls, fn: callable, payload: dict):
+        return await cls.aresponse(fn(to_bytes(payload)))
 
 
 @dataclass

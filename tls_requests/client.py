@@ -336,7 +336,6 @@ class BaseClient:
     def _send(
         self, request: Request, *, history: list = None, start: float = None
     ) -> Response:
-        history = history if isinstance(history, list) else []
         start = start or time.perf_counter()
         config = self.prepare_config(request)
         response = Response.from_tls_response(
@@ -483,6 +482,7 @@ class Client(BaseClient):
         response = self._send(
             request,
             start=time.perf_counter(),
+            history=[]
         )
 
         if self.hooks.get("response"):
@@ -755,39 +755,6 @@ class AsyncClient(BaseClient):
         )
         return await self.send(request, auth=auth, follow_redirects=follow_redirects)
 
-    async def send(
-        self,
-        request: Request,
-        *,
-        stream: bool = False,
-        auth: AuthTypes = None,
-        follow_redirects: bool = DEFAULT_FOLLOW_REDIRECTS,
-    ) -> Response:
-        if self._state == ClientState.CLOSED:
-            raise RuntimeError("Cannot send a request, as the client has been closed.")
-
-        self._state = ClientState.OPENED
-        for fn in [self.prepare_auth, self.build_hook_request]:
-            request_ = fn(request, auth or self.auth, follow_redirects)
-            if isinstance(request_, Request):
-                request = request_
-
-        self.follow_redirects = follow_redirects
-        response = self._send(
-            request,
-            start=time.perf_counter(),
-        )
-
-        if self.hooks.get("response"):
-            response_ = self.build_hook_response(response)
-            if isinstance(response_, Response):
-                response = response_
-        else:
-            await response.aread()
-
-        await response.aclose()
-        return response
-
     async def get(
         self,
         url: URLTypes,
@@ -994,6 +961,65 @@ class AsyncClient(BaseClient):
             follow_redirects=follow_redirects,
             timeout=timeout,
         )
+
+    async def send(
+        self,
+        request: Request,
+        *,
+        stream: bool = False,
+        auth: AuthTypes = None,
+        follow_redirects: bool = DEFAULT_FOLLOW_REDIRECTS,
+    ) -> Response:
+        if self._state == ClientState.CLOSED:
+            raise RuntimeError("Cannot send a request, as the client has been closed.")
+
+        self._state = ClientState.OPENED
+        for fn in [self.prepare_auth, self.build_hook_request]:
+            request_ = fn(request, auth or self.auth, follow_redirects)
+            if isinstance(request_, Request):
+                request = request_
+
+        self.follow_redirects = follow_redirects
+        response = await self._send(
+            request,
+            start=time.perf_counter(),
+            history=[]
+        )
+
+        if self.hooks.get("response"):
+            response_ = self.build_hook_response(response)
+            if isinstance(response_, Response):
+                response = response_
+        else:
+            await response.aread()
+
+        await response.aclose()
+        return response
+
+    async def _send(
+        self, request: Request, *, history: list = None, start: float = None
+    ) -> Response:
+        start = start or time.perf_counter()
+        config = self.prepare_config(request)
+        response = Response.from_tls_response(
+            await self.session.arequest(config.to_dict()), is_byte_response=config.isByteResponse,
+        )
+        response.request = request
+        response.default_encoding = self.encoding
+        response.elapsed = datetime.timedelta(seconds=time.perf_counter() - start)
+        if response.is_redirect:
+            response.next = self._rebuild_redirect_request(response.request, response)
+            if self.follow_redirects:
+                is_break = bool(len(history) < self.max_redirects)
+                if not is_break:
+                    raise TooManyRedirects("Too many redirects.")
+
+                while is_break:
+                    history.append(response)
+                    return await self._send(response.next, history=history, start=start)
+
+        response.history = history
+        return response
 
     async def aclose(self) -> None:
         return self.close()
