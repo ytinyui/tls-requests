@@ -9,7 +9,7 @@ from setuptools import setup
 
 BASE_DIR = os.path.dirname(__file__)
 CURRENT_PYTHON = sys.version_info[:2]
-REQUIRED_PYTHON = (3, 9)
+REQUIRED_PYTHON = (3, 8)
 
 if CURRENT_PYTHON < REQUIRED_PYTHON:
     sys.stderr.write(

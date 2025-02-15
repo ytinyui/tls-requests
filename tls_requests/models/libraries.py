@@ -7,7 +7,7 @@ import sys
 from dataclasses import dataclass, field, fields
 from pathlib import Path
 from platform import machine
-from typing import Optional
+from typing import List, Optional
 
 import requests
 from tqdm import tqdm
@@ -86,7 +86,7 @@ class ReleaseAsset(BaseRelease):
 class Release(BaseRelease):
     name: Optional[str] = None
     tag_name: Optional[str] = None
-    assets: list[ReleaseAsset] = field(default_factory=list)
+    assets: List[ReleaseAsset] = field(default_factory=list)
 
     @classmethod
     def from_kwargs(cls, **kwargs):
@@ -274,7 +274,7 @@ class TLSLibrary:
                 return fp
 
     @classmethod
-    def find_all(cls) -> list[str]:
+    def find_all(cls) -> List[str]:
         return [
             src
             for src in glob.glob(os.path.join(BIN_DIR, r"*"))

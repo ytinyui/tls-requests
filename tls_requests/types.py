@@ -3,8 +3,8 @@ Type definitions for type checking purposes.
 """
 
 from http.cookiejar import CookieJar
-from typing import (IO, TYPE_CHECKING, Any, BinaryIO, Callable, List, Literal,
-                    Mapping, Optional, Sequence, Tuple, Union)
+from typing import (IO, TYPE_CHECKING, Any, BinaryIO, Callable, Dict, List,
+                    Literal, Mapping, Optional, Sequence, Set, Tuple, Union)
 from uuid import UUID
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -28,9 +28,9 @@ URLParamTypes = Optional[
             Union[str, bytes],
             Union[
                 URL_ALLOWED_PARAMS,
-                list[URL_ALLOWED_PARAMS],
-                tuple[URL_ALLOWED_PARAMS],
-                set[URL_ALLOWED_PARAMS],
+                List[URL_ALLOWED_PARAMS],
+                Tuple[URL_ALLOWED_PARAMS],
+                Set[URL_ALLOWED_PARAMS],
             ],
         ],
     ]
@@ -43,7 +43,7 @@ HookTypes = Optional[Mapping[Literal["request", "response"], Sequence[Callable]]
 TLSSession = Union["TLSSession", None]
 TLSSessionId = Union[str, UUID]
 TLSPayload = Union[dict, str, bytes, bytearray]
-TLSCookiesTypes = Optional[List[dict[str, str]]]
+TLSCookiesTypes = Optional[List[Dict[str, str]]]
 TLSIdentifierTypes = Literal[
     "chrome_103",
     "chrome_104",
@@ -104,12 +104,7 @@ HeaderTypes = Optional[
         "Headers",
         Mapping[str, str],
         Mapping[bytes, bytes],
-        List[list[str, str]],
-        List[list[bytes, bytes]],
-        List[tuple[str, str]],
-        List[tuple[bytes, bytes]],
-        List[set[str, str]],
-        List[set[bytes, bytes]],
+        List[Union[List[Union[str, bytes]], Tuple[Union[str, bytes]], Set[Union[str, bytes]]]],
     ]
 ]
 
@@ -119,12 +114,7 @@ CookieTypes = Optional[
         CookieJar,
         Mapping[str, str],
         Mapping[bytes, bytes],
-        List[list[str, str]],
-        List[list[bytes, bytes]],
-        List[tuple[str, str]],
-        List[tuple[bytes, bytes]],
-        List[set[str, str]],
-        List[set[bytes, bytes]],
+        List[Union[List[Union[str, bytes]], Tuple[Union[str, bytes]], Set[Union[str, bytes]]]],
     ]
 ]
 
