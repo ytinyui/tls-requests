@@ -2,7 +2,7 @@ import binascii
 import os
 from io import BufferedReader, BytesIO, TextIOWrapper
 from mimetypes import guess_type
-from typing import Any, AsyncIterator, Iterator, Mapping, TypeVar
+from typing import Any, AsyncIterator, Dict, Iterator, Mapping, Tuple, TypeVar
 from urllib.parse import urlencode
 
 from tls_requests.types import (BufferTypes, ByteOrStr, RequestData,
@@ -75,7 +75,7 @@ class BaseField:
         yield self.render_headers()
         yield from self.render_data(chunk_size)
 
-    def get_headers(self) -> dict[bytes, bytes]:
+    def get_headers(self) -> Dict[bytes, bytes]:
         self._headers[b"Content-Disposition"] = self.render_parts()
         content_type = getattr(self, "content_type", None)
         if content_type:
@@ -101,7 +101,7 @@ class FileField(BaseField):
         super(FileField, self).__init__(name, value)
         self.filename, self._buffer, self.content_type = self.unpack(value)
 
-    def unpack(self, value: RequestFileValue) -> tuple[str, BufferTypes, str]:
+    def unpack(self, value: RequestFileValue) -> Tuple[str, BufferTypes, str]:
         filename, content_type = None, None
         if isinstance(value, tuple):
             if len(value) > 1:

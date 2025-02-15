@@ -2,7 +2,7 @@ import ctypes
 import uuid
 from dataclasses import asdict, dataclass, field
 from dataclasses import fields as get_fields
-from typing import Any, Optional, TypeVar, Union
+from typing import Any, List, Mapping, Optional, Set, TypeVar, Union
 
 from tls_requests.models.encoders import StreamEncoder
 from tls_requests.models.libraries import TLSLibrary
@@ -178,7 +178,7 @@ class _BaseConfig:
     """Base configuration for TLSSession"""
 
     @classmethod
-    def model_fields_set(cls) -> set[str]:
+    def model_fields_set(cls) -> Set[str]:
         return {
             model_field.name
             for model_field in get_fields(cls)
@@ -341,19 +341,19 @@ class CustomTLSClientConfig(_BaseConfig):
 
     """
 
-    alpnProtocols: list[str] = None
-    alpsProtocols: list[str] = None
+    alpnProtocols: List[str] = None
+    alpsProtocols: List[str] = None
     certCompressionAlgo: str = None
     connectionFlow: int = None
-    h2Settings: list[str] = None
-    h2SettingsOrder: list[str] = None
-    headerPriority: list[str] = None
+    h2Settings: List[str] = None
+    h2SettingsOrder: List[str] = None
+    headerPriority: List[str] = None
     ja3String: str = None
-    keyShareCurves: list[str] = None
-    priorityFrames: list[str] = None
-    pseudoHeaderOrder: list[str] = None
-    supportedSignatureAlgorithms: list[str] = None
-    supportedVersions: list[str] = None
+    keyShareCurves: List[str] = None
+    priorityFrames: List[str] = None
+    pseudoHeaderOrder: List[str] = None
+    supportedSignatureAlgorithms: List[str] = None
+    supportedVersions: List[str] = None
 
 
 @dataclass
@@ -424,19 +424,19 @@ class TLSConfig(_BaseConfig):
     """
 
     catchPanics: bool = False
-    certificatePinningHosts: dict[str, str] = field(default_factory=dict)
+    certificatePinningHosts: Mapping[str, str] = field(default_factory=dict)
     customTlsClient: Optional[CustomTLSClientConfig] = None
     followRedirects: bool = False
     forceHttp1: bool = False
-    headerOrder: list[str] = field(default_factory=list)
-    headers: dict[str, str] = field(default_factory=dict)
+    headerOrder: List[str] = field(default_factory=list)
+    headers: Mapping[str, str] = field(default_factory=dict)
     insecureSkipVerify: bool = False
     isByteRequest: bool = False
     isByteResponse: bool = True
     isRotatingProxy: bool = False
     proxyUrl: str = ""
     requestBody: Union[str, bytes, bytearray, None] = None
-    requestCookies: list[TLSRequestCookiesConfig] = field(default_factory=list)
+    requestCookies: List[TLSRequestCookiesConfig] = field(default_factory=list)
     requestMethod: MethodTypes = None
     requestUrl: Optional[str] = None
     sessionId: str = field(default_factory=lambda: str(uuid.uuid4()))
@@ -471,7 +471,7 @@ class TLSConfig(_BaseConfig):
     def copy_with(
         self,
         session_id: str = None,
-        headers: dict[str, str] = None,
+        headers: Mapping[str, str] = None,
         cookies: TLSCookiesTypes = None,
         method: MethodTypes = None,
         url: URLTypes = None,
@@ -515,7 +515,7 @@ class TLSConfig(_BaseConfig):
     def from_kwargs(
         cls,
         session_id: str = None,
-        headers: dict[str, str] = None,
+        headers: Mapping[str, str] = None,
         cookies: TLSCookiesTypes = None,
         method: MethodTypes = None,
         url: URLTypes = None,
