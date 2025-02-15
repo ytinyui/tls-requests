@@ -1,5 +1,15 @@
 # TLS Requests
-TLS Requests is a powerful Python library for secure HTTP requests, offering browser-like TLS fingerprinting, anti-bot bypassing, and high performance.
+
+[![GitHub License](https://img.shields.io/github/license/thewebscraping/tls-requests)](https://github.com/thewebscraping/tls-requests/blob/main/LICENSE)
+[![CI](https://github.com/thewebscraping/tls-requests/actions/workflows/ci.yml/badge.svg)](https://github.com/thewebscraping/tls-requests/actions/workflows/ci.yml)
+[![PyPI - Version](https://img.shields.io/pypi/v/wrapper-tls-requests)](https://pypi.org/project/wrapper-tls-requests/)
+![Python Version](https://img.shields.io/badge/Python-3.9%20%7C%203.10%20%7C%203.11%20%7C%203.12-blue?style=flat)
+![Pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)
+
+[![](https://img.shields.io/badge/Pytest-Linux%20%7C%20MacOS%20%7C%20Windows-blue?style=flat&logo=pytest&logoColor=white)](https://github.com/thewebscraping/tls-requests)
+[![Documentation](https://img.shields.io/badge/Mkdocs-Documentation-blue?style=flat&logo=MaterialForMkDocs&logoColor=white)](https://thewebscraping.github.io/tls-requests/)
+
+TLS Requests is a powerful Python library for secure HTTP requests, offering browser-like TLS fingerprinting, anti-bot page bypass, and high performance.
 
 * * *
 
@@ -110,3 +120,15 @@ Explore the full capabilities of TLS Requests in the documentation:
 
 
 Read the documentation: [**thewebscraping.github.io/tls-requests/**](https://thewebscraping.github.io/tls-requests/)
+
+**Report Issues**
+-----------------
+
+Found a bug? Please [open an issue](https://github.com/thewebscraping/tls-requests/issues/).
+
+By reporting an issue you help improve the project.
+
+**Credits**
+-----------------
+
+Special thanks to [bogdanfinn](https://github.com/bogdanfinn/) for creating the awesome [tls-client](https://github.com/bogdanfinn/tls-client).

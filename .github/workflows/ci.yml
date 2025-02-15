@@ -1,20 +1,20 @@
-name: CI/CD
+name: CI
 
 on:
   push:
-    branches: ['master', 'main', 'dev', 'develop']
+    branches: ['master', 'main']
 
   pull_request:
     branches: ['master', 'main', 'dev', 'develop']
 
 jobs:
-  build:
+  build-on-ubuntu:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       max-parallel: 3
       matrix:
-        python-version: ['3.9', '3.10', '3.11', '3.12', '3.13']
+        python-version: ['3.9', '3.10', '3.11']
     steps:
     - uses: actions/checkout@v4
     - name: Set up Python ${{ matrix.python-version }}
@@ -22,37 +22,50 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
-    - name: Install Dependencies
+    - name: Install Dependencies, Lint and Tests
       run: |
-        make init
+        make init-actions
 
-    - name: Lint
+  build-on-mac:
+    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        python-version: ['3.9']
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install Dependencies, Lint and Tests
       run: |
-        make lint
+        make init-actions
 
-    - name: Tests
+    - name: Pytest
       run: |
         make pytest
 
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+  build-on-windows:
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        python-version: ['3.9']
     steps:
-      - uses: actions/checkout@v4
-      - name: Configure Git Credentials
-        run: |
-          git config user.name github-actions[bot]
-          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
-      - run: echo "cache_id=$(date --utc '+%V')" >> $GITHUB_ENV
-      - uses: actions/cache@v4
-        with:
-          key: mkdocs-material-${{ env.cache_id }}
-          path: .cache
-          restore-keys: |
-            mkdocs-material-
-      - run: pip install -r requirements-dev.txt
-      - run: mkdocs gh-deploy --force
+    - uses: actions/checkout@v4
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install Dependencies, Lint
+      run: |
+        make init-actions
+
+    - name: Pytest
+      run: |
+        make pytest
