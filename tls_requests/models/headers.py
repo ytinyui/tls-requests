@@ -1,7 +1,7 @@
 from abc import ABC
 from collections.abc import Mapping, MutableMapping
 from enum import Enum
-from typing import Any, ItemsView, KeysView, Literal, ValuesView
+from typing import Any, ItemsView, KeysView, List, Literal, Tuple, ValuesView
 
 from tls_requests.types import ByteOrStr, HeaderTypes
 from tls_requests.utils import to_str
@@ -63,7 +63,7 @@ class Headers(MutableMapping, ABC):
     def copy(self) -> "Headers":
         return self.__class__(self._items.copy(), alias=self.alias)  # noqa
 
-    def _prepare_items(self, headers: HeaderTypes) -> list[tuple[str, Any]]:
+    def _prepare_items(self, headers: HeaderTypes) -> List[Tuple[str, Any]]:
         if headers is None:
             return []
         if isinstance(headers, self.__class__):
@@ -88,7 +88,7 @@ class Headers(MutableMapping, ABC):
 
         return key.lower()
 
-    def _normalize_value(self, value) -> list[str]:
+    def _normalize_value(self, value) -> List[str]:
         if isinstance(value, dict):
             raise TypeError
 
@@ -102,7 +102,7 @@ class Headers(MutableMapping, ABC):
 
         return [to_str(value)]
 
-    def _normalize(self, key, value) -> tuple[str, list[str]]:
+    def _normalize(self, key, value) -> Tuple[str, List[str]]:
         return self._normalize_key(key), self._normalize_value(value)
 
     def __setitem__(self, key, value) -> None:

@@ -53,7 +53,7 @@ class URLParams(Mapping, ABC):
 
     @property
     def params(self) -> str:
-        return quote(str(self))
+        return str(self)
 
     def update(self, params: URLParamTypes = None, **kwargs):
         self._data.update(self._prepare(params, **kwargs))
