@@ -58,7 +58,7 @@ it combines ease of use with advanced functionality for secure networking.
 ### **Key Benefits**
 
 *   **Bypass TLS Fingerprinting:** Mimic browser-like behaviors to navigate sophisticated anti-bot systems.
-*   **Customizable TLS Clients:** Select specific TLS fingerprints to meet your needs.
+*   **Customizable TLS Client:** Select specific TLS fingerprints to meet your needs.
 *   **Ideal for Developers:** Build scrapers, API clients, or other custom networking tools effortlessly.
 
 
