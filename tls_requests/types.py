@@ -99,12 +99,23 @@ TLSIdentifierTypes = Literal[
     "confirmed_android_2",
 ]
 
+AnyList = List[
+    Union[
+        List[Union[str, Union[str, int, float]]],
+        Tuple[Union[str, Union[str, int, float]]],
+        Set[Union[str, Union[str, int, float]]],
+        List[Union[str, bytes]],
+        Tuple[Union[str, bytes]],
+        Set[Union[str, bytes]],
+    ]
+]
+
 HeaderTypes = Optional[
     Union[
         "Headers",
-        Mapping[str, str],
+        Mapping[str, Union[str, int, float]],
         Mapping[bytes, bytes],
-        List[Union[List[Union[str, bytes]], Tuple[Union[str, bytes]], Set[Union[str, bytes]]]],
+        AnyList,
     ]
 ]
 
@@ -112,9 +123,9 @@ CookieTypes = Optional[
     Union[
         "Cookies",
         CookieJar,
-        Mapping[str, str],
+        Mapping[str, Union[str, int, float]],
         Mapping[bytes, bytes],
-        List[Union[List[Union[str, bytes]], Tuple[Union[str, bytes]], Set[Union[str, bytes]]]],
+        AnyList,
     ]
 ]
 

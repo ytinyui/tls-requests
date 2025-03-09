@@ -6,11 +6,13 @@ import copy
 from abc import ABC
 from email.message import Message
 from http import cookiejar as cookielib
+from http.cookiejar import Cookie
 from http.cookies import Morsel
-from typing import TYPE_CHECKING, Iterator, MutableMapping
+from typing import TYPE_CHECKING, Iterator, MutableMapping, Optional
 from urllib.parse import urlparse, urlunparse
 
 from tls_requests.exceptions import CookieConflictError
+from tls_requests.types import CookieTypes
 
 if TYPE_CHECKING:
     from .request import Request
@@ -123,7 +125,8 @@ class RequestsCookieJar(cookielib.CookieJar, MutableMapping):
         .. warning:: operation is O(n), not O(1).
         """
         try:
-            return self._find_no_duplicates(name, domain, path)
+            value = self._find_no_duplicates(name, domain, path)
+            return value
         except KeyError:
             return default
 
@@ -332,7 +335,7 @@ class RequestsCookieJar(cookielib.CookieJar, MutableMapping):
                         # we will eventually return this as long as no cookie conflict
                         toReturn = cookie.value
 
-        if toReturn:
+        if toReturn is not None:
             return toReturn
         raise KeyError(f"name={name!r}, domain={domain!r}, path={path!r}")
 
@@ -536,14 +539,16 @@ class Cookies(MutableMapping[str, str], ABC):
         if isinstance(cookies, self.__class__):
             return cookies.cookiejar
 
-        if isinstance(cookies, dict):
-            return cookiejar_from_dict(cookies)
-
-        if isinstance(cookies, (tuple, list, set)):
+        if isinstance(cookies, (dict, tuple, list, set)):
             cookiejar = RequestsCookieJar()
-            for k, v in cookies:
-                cookiejar.set(k, v)
+            if isinstance(cookies, dict):
+                cookies = cookies.items()
 
+            for k, v in cookies:
+                if isinstance(v, (float, int)):
+                    v = str(v)
+
+                cookiejar.set(k, v)
             return cookiejar
 
         return RequestsCookieJar()
@@ -551,13 +556,25 @@ class Cookies(MutableMapping[str, str], ABC):
     def extract_cookies(self, response: Response, request: Request) -> None:
         extract_cookies_to_jar(self.cookiejar, response, request)
 
-    def get_cookie_header(self, request: Request):
+    def get_cookie_header(self, request: Request) -> str:
         return get_cookie_header(self.cookiejar, request)
 
-    def set(self, name, value, **kwargs) -> None:
-        self.cookiejar.set(name, value, **kwargs)
+    def set(self, name, value, **kwargs) -> Optional[Cookie]:
+        if value is None:
+            remove_cookie_by_name(
+                self, name, domain=kwargs.get("domain"), path=kwargs.get("path")
+            )
+            return
 
-    def get(self, name, default=None, domain="", path="/"):
+        if isinstance(value, Morsel):
+            cookie = morsel_to_cookie(value)
+        else:
+            cookie = create_cookie(name, value, **kwargs)
+
+        self.cookiejar.set_cookie(cookie)
+        return cookie
+
+    def get(self, name, default=None, domain="", path="/") -> str:
         return self.cookiejar.get(name, default, domain, path)
 
     def delete(self, name: str, domain: str = None, path: str = None) -> None:
@@ -581,14 +598,11 @@ class Cookies(MutableMapping[str, str], ABC):
         ret.cookiejar = _copy_cookie_jar(self.cookiejar)
         return ret
 
-    def __setitem__(self, name: str, value: str) -> None:
+    def __setitem__(self, name: str, value: str) -> Optional[Cookie]:
         return self.set(name, value)
 
     def __getitem__(self, name: str) -> str:
-        value = self.get(name)
-        if value is None:
-            raise KeyError(name)
-        return value
+        return self.cookiejar.get(name)
 
     def __delitem__(self, name: str) -> None:
         return self.delete(name)
@@ -605,5 +619,5 @@ class Cookies(MutableMapping[str, str], ABC):
         return False
 
     def __repr__(self) -> str:
-        r = ", ".join([repr(cookie) for cookie in self.cookiejar])
-        return "<%s[%s]>" % (self.__class__.__name__, r)
+        cookiejar_repr = ", ".join([repr(cookie) for cookie in self.cookiejar])
+        return "<%s[%s]>" % (self.__class__.__name__, cookiejar_repr)
