@@ -129,7 +129,7 @@ class Headers(MutableMapping, ABC):
                 pop_idx = idx
                 break
 
-        if pop_idx:
+        if pop_idx is not None:
             self._items.pop(pop_idx)
 
     def __contains__(self, key: Any) -> bool:
@@ -145,7 +145,7 @@ class Headers(MutableMapping, ABC):
     def __len__(self):
         return len(self._headers)
 
-    def __eq__(self, other):
+    def __eq__(self, other: HeaderTypes):
         items = sorted(self._items)
         other = sorted(self._prepare_items(other))
         return items == other
