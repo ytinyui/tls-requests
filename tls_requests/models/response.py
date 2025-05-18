@@ -53,7 +53,6 @@ class Response:
         self._is_closed = False
         self._next: Optional[Request] = None
         self.headers = Headers(headers)
-        self.stream = None
         self.status_code = status_code
         self.history = history if isinstance(history, list) else []
         self.default_encoding = default_encoding
@@ -135,6 +134,7 @@ class Response:
             msg = Message()
             msg["content-type"] = self.headers["Content-Type"]
             return msg.get_content_charset(failobj=None)
+        return None
 
     @property
     def encoding(self) -> str:
@@ -227,6 +227,10 @@ class Response:
             self._is_closed = True
             self._is_stream_consumed = True
             self.stream.close()
+
+        # Fix pickle dump
+        # Ref: https://github.com/thewebscraping/tls-requests/issues/35
+        self.stream = None
 
     async def aclose(self) -> None:
         return self.close()

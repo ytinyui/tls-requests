@@ -350,6 +350,7 @@ class RequestsCookieJar(cookielib.CookieJar, MutableMapping):
         """Unlike a normal CookieJar, this class is pickleable."""
         self.__dict__.update(state)
         if "_cookies_lock" not in self.__dict__:
+            import threading
             self._cookies_lock = threading.RLock()
 
     def copy(self):
