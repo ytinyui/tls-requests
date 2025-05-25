@@ -21,8 +21,13 @@ __all__ = [
 class HTTPError(Exception):
     """HTTP Error"""
 
-    def __init__(self, message: str) -> None:
+    def __init__(self, message: str, **kwargs) -> None:
         self.message = message
+        response = kwargs.pop("response", None)
+        self.response = response
+        self.request = kwargs.pop("request", None)
+        if response is not None and not self.request and hasattr(response, "request"):
+            self.request = self.response.request
 
 
 class ProtocolError(HTTPError):
