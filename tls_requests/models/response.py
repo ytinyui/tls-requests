@@ -197,7 +197,8 @@ class Response:
                         else StatusCodes.get_reason(self.status_code)
                     ),
                     self.url,
-                )
+                ),
+                response=self,
             )
 
         return self
