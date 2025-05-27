@@ -28,6 +28,7 @@ class HTTPError(Exception):
         self.request = kwargs.pop("request", None)
         if response is not None and not self.request and hasattr(response, "request"):
             self.request = self.response.request
+        super().__init__(message, **kwargs)
 
 
 class ProtocolError(HTTPError):
