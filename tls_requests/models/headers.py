@@ -1,4 +1,3 @@
-from abc import ABC
 from collections.abc import Mapping, MutableMapping
 from enum import Enum
 from typing import Any, ItemsView, KeysView, List, Literal, Tuple, ValuesView
@@ -23,7 +22,7 @@ class HeaderAlias(str, Enum):
         return False
 
 
-class Headers(MutableMapping, ABC):
+class Headers(MutableMapping):
     def __init__(
         self,
         headers: HeaderTypes = None,
@@ -110,8 +109,7 @@ class Headers(MutableMapping, ABC):
         key, value = self._normalize(key, value)
         for idx, (k, _) in enumerate(self._items):
             if k == key:
-                values = [v for v in value if v not in self._items[idx][1]]
-                self._items[idx][1].extend(values)
+                self._items[idx] = (k, value)
                 found = True
                 break
 

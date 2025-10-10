@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import copy
-from abc import ABC
 from email.message import Message
 from http import cookiejar as cookielib
 from http.cookiejar import Cookie
@@ -140,7 +139,7 @@ class RequestsCookieJar(cookielib.CookieJar, MutableMapping):
             remove_cookie_by_name(
                 self, name, domain=kwargs.get("domain"), path=kwargs.get("path")
             )
-            return
+            return None
 
         if isinstance(value, Morsel):
             c = morsel_to_cookie(value)
@@ -280,7 +279,7 @@ class RequestsCookieJar(cookielib.CookieJar, MutableMapping):
             and cookie.value.endswith('"')
         ):
             cookie.value = cookie.value.replace('\\"', "")
-        return super().set_cookie(cookie, *args, **kwargs)
+        return super().set_cookie(cookie, *args, **kwargs)  # type: ignore
 
     def update(self, other):  # noqa
         """Updates this jar with cookies from another CookieJar or dict-like"""
@@ -532,7 +531,7 @@ def merge_cookies(cookiejar, cookies):
     return cookiejar
 
 
-class Cookies(MutableMapping[str, str], ABC):
+class Cookies(MutableMapping[str, str]):
     def __init__(self, cookies: CookieTypes = None) -> None:
         self.cookiejar = self._prepare_cookiejar(cookies)
 
@@ -565,7 +564,7 @@ class Cookies(MutableMapping[str, str], ABC):
             remove_cookie_by_name(
                 self, name, domain=kwargs.get("domain"), path=kwargs.get("path")
             )
-            return
+            return None
 
         if isinstance(value, Morsel):
             cookie = morsel_to_cookie(value)
