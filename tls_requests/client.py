@@ -8,7 +8,7 @@ from enum import Enum
 from typing import (Any, Callable, Literal, Mapping, Optional, Sequence,
                     TypeVar, Union)
 
-from .exceptions import RemoteProtocolError, TooManyRedirects
+from .exceptions import ProxyError, RemoteProtocolError, TooManyRedirects
 from .models import (URL, Auth, BasicAuth, Cookies, HeaderRotator, Headers,
                      Proxy, ProxyRotator, Request, Response, StatusCodes,
                      TLSClient, TLSConfig, TLSIdentifierRotator, URLParams)
@@ -119,7 +119,11 @@ class BaseClient:
         self.max_redirects = max_redirects
         self.http2 = http2
         self.verify = verify
-        self.client_identifier = TLSIdentifierRotator.from_file(client_identifier) if isinstance(client_identifier, list) else client_identifier
+        self.client_identifier = (
+            TLSIdentifierRotator.from_file(client_identifier)
+            if isinstance(client_identifier, list)
+            else client_identifier
+        )
         self.encoding = encoding
 
     @property
@@ -174,9 +178,7 @@ class BaseClient:
     def hooks(self, hooks: HookTypes) -> None:
         self._hooks = self._rebuild_hooks(hooks)
 
-    def prepare_auth(
-        self, request: Request, auth: AuthTypes, *args, **kwargs
-    ) -> Union[Request, Any]:
+    def prepare_auth(self, request: Request, auth: AuthTypes, *args, **kwargs) -> Union[Request, Any]:
         """Build Auth Request instance"""
 
         if isinstance(auth, tuple) and len(auth) == 2:
@@ -222,7 +224,7 @@ class BaseClient:
             return proxy
         if isinstance(proxy, URL):
             return Proxy(str(proxy))
-        raise TypeError(f"Unsupported proxy type: {type(proxy)}")
+        raise ProxyError(f"Unsupported proxy type: {type(proxy)}")
 
     def prepare_tls_identifier(self, identifier: Optional[str, TLSIdentifierRotator]) -> str:
         if isinstance(identifier, str):
@@ -279,9 +281,7 @@ class BaseClient:
             timeout=timeout or self.timeout,
         )
 
-    def build_hook_request(
-        self, request: Request, *args, **kwargs
-    ) -> Union[Request, Any]:
+    def build_hook_request(self, request: Request, *args, **kwargs) -> Union[Request, Any]:
         request_hooks = self._rebuild_hooks(self.hooks).get("request")
         if isinstance(request_hooks, Sequence):
             for hook in request_hooks:
@@ -289,9 +289,7 @@ class BaseClient:
                     return hook(request)
         return None
 
-    def build_hook_response(
-        self, response: Response, *args, **kwargs
-    ) -> Union[Response, Any]:
+    def build_hook_response(self, response: Response, *args, **kwargs) -> Union[Response, Any]:
         request_hooks = self._rebuild_hooks(self.hooks).get("response")
         if isinstance(request_hooks, Sequence):
             for hook in request_hooks:
@@ -308,9 +306,7 @@ class BaseClient:
             }
         return None
 
-    def _rebuild_redirect_request(
-        self, request: Request, response: Response
-    ) -> Request:
+    def _rebuild_redirect_request(self, request: Request, response: Response) -> Request:
         """Rebuild Redirect Request"""
 
         return Request(
@@ -357,7 +353,8 @@ class BaseClient:
                     self.config.sessionId = str(uuid.uuid4())
                 else:
                     raise RemoteProtocolError(
-                        "Switching remote scheme from HTTP/2 to HTTP/1 is not supported. Please initialize Client with parameter `http2` to `auto`."
+                        "Switching remote scheme from HTTP/2 to HTTP/1 is not supported. Please initialize Client with"
+                        " parameter `http2` to `auto`."
                     )
 
         setattr(url, "_url", None)  # reset url
@@ -366,9 +363,7 @@ class BaseClient:
 
         return url
 
-    def _send(
-        self, request: Request, *, history: list = None, start: float = None
-    ) -> Response:
+    def _send(self, request: Request, *, history: list = None, start: float = None) -> Response:
         start = start or time.perf_counter()
         tls_identifier = self.prepare_tls_identifier(self.client_identifier)
         config = self.prepare_config(request, tls_identifier=tls_identifier)
@@ -401,14 +396,10 @@ class BaseClient:
 
     def __enter__(self: T) -> T:
         if self._state == ClientState.OPENED:
-            raise RuntimeError(
-                "It is not possible to open a client instance more than once."
-            )
+            raise RuntimeError("It is not possible to open a client instance more than once.")
 
         if self._state == ClientState.CLOSED:
-            raise RuntimeError(
-                "The client instance cannot be reopened after it has been closed."
-            )
+            raise RuntimeError("The client instance cannot be reopened after it has been closed.")
 
         self._state = ClientState.OPENED
         return self
@@ -518,7 +509,9 @@ class Client(BaseClient):
         if isinstance(self.proxy, ProxyRotator) and response.request.proxy:
             proxy_success = 200 <= response.status_code < 500 and response.status_code not in [407]
             self.proxy.mark_result(
-                proxy=response.request.proxy, success=proxy_success, latency=response.elapsed
+                proxy=response.request.proxy,
+                success=proxy_success,
+                latency=response.elapsed,
             )
 
         if self.hooks.get("response"):
@@ -780,7 +773,7 @@ class AsyncClient(BaseClient):
             return proxy
         if isinstance(proxy, URL):
             return Proxy(str(proxy))
-        raise TypeError(f"Unsupported proxy type: {type(proxy)}")
+        raise ProxyError(f"Unsupported proxy type: {type(proxy)}")
 
     async def aprepare_tls_identifier(self, identifier) -> str:
         if isinstance(identifier, str):
@@ -1078,7 +1071,9 @@ class AsyncClient(BaseClient):
         if isinstance(self.proxy, ProxyRotator) and response.request.proxy:
             proxy_success = 200 <= response.status_code < 500 and response.status_code not in [407]
             await self.proxy.amark_result(
-                proxy=response.request.proxy, success=proxy_success, latency=response.elapsed
+                proxy=response.request.proxy,
+                success=proxy_success,
+                latency=response.elapsed,
             )
 
         if self.hooks.get("response"):
@@ -1091,9 +1086,7 @@ class AsyncClient(BaseClient):
         await response.aclose()
         return response
 
-    async def _send(
-        self, request: Request, *, history: list = None, start: float = None
-    ) -> Response:
+    async def _send(self, request: Request, *, history: list = None, start: float = None) -> Response:
         start = start or time.perf_counter()
         tls_identifier = await self.aprepare_tls_identifier(self.client_identifier)
         config = self.prepare_config(request, tls_identifier=tls_identifier)
@@ -1123,14 +1116,10 @@ class AsyncClient(BaseClient):
 
     async def __aenter__(self: A) -> A:
         if self._state == ClientState.OPENED:
-            raise RuntimeError(
-                "It is not possible to open a client instance more than once."
-            )
+            raise RuntimeError("It is not possible to open a client instance more than once.")
 
         if self._state == ClientState.CLOSED:
-            raise RuntimeError(
-                "The client instance cannot be reopened after it has been closed."
-            )
+            raise RuntimeError("The client instance cannot be reopened after it has been closed.")
 
         self._state = ClientState.OPENED
         return self

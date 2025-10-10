@@ -17,6 +17,13 @@ repos:
       - id: check-docstring-first
       - id: detect-private-key
 
+  # run the autoflake.
+  - repo: https://github.com/PyCQA/autoflake
+    rev: v2.3.1
+    hooks:
+      - id: autoflake
+        args: [--remove-all-unused-imports, --in-place, --ignore-init-module-imports]
+
   # run the isort.
   - repo: https://github.com/PyCQA/isort
     rev: 6.1.0

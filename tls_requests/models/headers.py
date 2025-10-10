@@ -2,8 +2,9 @@ from collections.abc import Mapping, MutableMapping
 from enum import Enum
 from typing import Any, ItemsView, KeysView, List, Literal, Tuple, ValuesView
 
-from tls_requests.types import ByteOrStr, HeaderTypes
-from tls_requests.utils import to_str
+from ..exceptions import HeaderError
+from ..types import ByteOrStr, HeaderTypes
+from ..utils import to_str
 
 __all__ = ["Headers"]
 
@@ -23,15 +24,8 @@ class HeaderAlias(str, Enum):
 
 
 class Headers(MutableMapping):
-    def __init__(
-        self,
-        headers: HeaderTypes = None,
-        *,
-        alias: HeaderAliasTypes = HeaderAlias.LOWER
-    ):
-        self.alias = (
-            alias if alias in HeaderAlias._value2member_map_ else HeaderAlias.LOWER
-        )
+    def __init__(self, headers: HeaderTypes = None, *, alias: HeaderAliasTypes = HeaderAlias.LOWER):
+        self.alias = alias if alias in HeaderAlias._value2member_map_ else HeaderAlias.LOWER
         self._items = self._prepare_items(headers)
 
     def get(self, key: str, default: Any = None) -> Any:
@@ -75,7 +69,7 @@ class Headers(MutableMapping):
                 return items
             except IndexError:
                 pass
-        raise TypeError
+        raise HeaderError
 
     def _normalize_key(self, key: ByteOrStr) -> str:
         key = to_str(key, encoding="ascii")
@@ -89,13 +83,13 @@ class Headers(MutableMapping):
 
     def _normalize_value(self, value) -> List[str]:
         if isinstance(value, dict):
-            raise TypeError
+            raise HeaderError
 
         if isinstance(value, (list, tuple, set)):
             items = []
             for item in value:
                 if isinstance(item, dict):
-                    raise TypeError
+                    raise HeaderError
                 items.append(to_str(item))
             return items
 
@@ -149,9 +143,7 @@ class Headers(MutableMapping):
         return items == other
 
     def __repr__(self):
-        SECURE = [
-            self._normalize_key(key) for key in ["Authorization", "Proxy-Authorization"]
-        ]
+        SECURE = [self._normalize_key(key) for key in ["Authorization", "Proxy-Authorization"]]
         return "<%s: %s>" % (
             self.__class__.__name__,
             {k: "[secure]" if k in SECURE else ",".join(v) for k, v in self._items},

@@ -7,9 +7,8 @@ from urllib.parse import ParseResult, quote, unquote, urlencode, urlparse
 
 import idna
 
-from tls_requests.exceptions import ProxyError, URLError, URLParamsError
-from tls_requests.types import (URL_ALLOWED_PARAMS, ProxyTypes, URLParamTypes,
-                                URLTypes)
+from ..exceptions import ProxyError, URLError, URLParamsError
+from ..types import URL_ALLOWED_PARAMS, ProxyTypes, URLParamTypes, URLTypes
 
 __all__ = ["URL", "URLParams", "Proxy"]
 
@@ -322,9 +321,7 @@ class URL:
         """
         if isinstance(url, bytes):
             url = url.decode("utf-8")
-        elif isinstance(url, self.__class__) or issubclass(
-            self.__class__, url.__class__
-        ):
+        elif isinstance(url, self.__class__) or issubclass(self.__class__, url.__class__):
             url = str(url)
 
         if not isinstance(url, str):
@@ -437,7 +434,7 @@ class Proxy(URL):
         latency: Optional[float] = None,
         success_rate: Optional[float] = None,
         meta: Optional[Dict[str, Any]] = None,
-        **kwargs
+        **kwargs,
     ):
         """
         Initializes the Proxy object.
@@ -455,7 +452,7 @@ class Proxy(URL):
         Raises:
             ProxyError: If the URL is invalid or the scheme is not supported.
         """
-        self.weight = weight or 1.0
+        self._weight = weight or 1.0
         self.region = region
         self.latency = latency
         self.success_rate = success_rate
@@ -466,7 +463,22 @@ class Proxy(URL):
 
     def __repr__(self):
         """Returns a secure representation of the proxy with its weight."""
-        return "<%s: %s, weight=%s>" % (self.__class__.__name__, unquote(self._build(True)), getattr(self, "weight", "unset"))
+        return "<%s: %s, weight=%s>" % (
+            self.__class__.__name__,
+            unquote(self._build(True)),
+            getattr(self, "weight", "unset"),
+        )
+
+    @property
+    def weight(self) -> float:
+        return self._weight or 1.0
+
+    @weight.setter
+    def weight(self, weight: float) -> None:
+        try:
+            self._weight = float(weight)
+        except ValueError:
+            raise ProxyError("Weight must be an integer or float.")
 
     def _prepare(self, url: ProxyTypes) -> ParseResult:
         """
@@ -594,10 +606,10 @@ class Proxy(URL):
         Raises:
             ProxyError: If the 'url' key is missing from the dictionary.
         """
-        if 'url' not in data:
+        if "url" not in data:
             raise ProxyError("Missing required key: 'url'. The proxy configuration dictionary must include a 'url'.")
 
-        url = data.pop('url')
+        url = data.pop("url")
         return cls(
             url=url,
             **data,

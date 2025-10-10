@@ -93,9 +93,7 @@ class Release(BaseRelease):
     def from_kwargs(cls, **kwargs):
         model_fields_set = cls.model_fields_set()
         assets = kwargs.pop("assets", []) or []
-        kwargs["assets"] = [
-            ReleaseAsset.from_kwargs(**asset_kwargs) for asset_kwargs in assets
-        ]
+        kwargs["assets"] = [ReleaseAsset.from_kwargs(**asset_kwargs) for asset_kwargs in assets]
         return cls(**{k: v for k, v in kwargs.items() if k in model_fields_set})
 
 
@@ -137,34 +135,98 @@ class TLSLibrary:
         "name": "v1.11.2",
         "tag_name": "v1.11.2",
         "assets": [
-            {'browser_download_url': 'https://github.com/bogdanfinn/tls-client/releases/download/v1.11.2/tls-client-darwin-amd64-1.11.2.dylib', 'name': 'tls-client-darwin-amd64-1.11.2.dylib'},
-            {'browser_download_url': 'https://github.com/bogdanfinn/tls-client/releases/download/v1.11.2/tls-client-darwin-arm64-1.11.2.dylib', 'name': 'tls-client-darwin-arm64-1.11.2.dylib'},
-            {'browser_download_url': 'https://github.com/bogdanfinn/tls-client/releases/download/v1.11.2/tls-client-linux-alpine-amd64-1.11.2.so', 'name': 'tls-client-linux-alpine-amd64-1.11.2.so'},
-            {'browser_download_url': 'https://github.com/bogdanfinn/tls-client/releases/download/v1.11.2/tls-client-linux-arm64-1.11.2.so', 'name': 'tls-client-linux-arm64-1.11.2.so'},
-            {'browser_download_url': 'https://github.com/bogdanfinn/tls-client/releases/download/v1.11.2/tls-client-linux-armv7-1.11.2.so', 'name': 'tls-client-linux-armv7-1.11.2.so'},
-            {'browser_download_url': 'https://github.com/bogdanfinn/tls-client/releases/download/v1.11.2/tls-client-linux-ubuntu-amd64-1.11.2.so', 'name': 'tls-client-linux-ubuntu-amd64-1.11.2.so'},
-            {'browser_download_url': 'https://github.com/bogdanfinn/tls-client/releases/download/v1.11.2/tls-client-windows-32-1.11.2.dll', 'name': 'tls-client-windows-32-1.11.2.dll'},
-            {'browser_download_url': 'https://github.com/bogdanfinn/tls-client/releases/download/v1.11.2/tls-client-windows-64-1.11.2.dll', 'name': 'tls-client-windows-64-1.11.2.dll'},
-            {'browser_download_url': 'https://github.com/bogdanfinn/tls-client/releases/download/v1.11.2/tls-client-xgo-1.11.2-darwin-amd64.dylib', 'name': 'tls-client-xgo-1.11.2-darwin-amd64.dylib'},
-            {'browser_download_url': 'https://github.com/bogdanfinn/tls-client/releases/download/v1.11.2/tls-client-xgo-1.11.2-darwin-arm64.dylib', 'name': 'tls-client-xgo-1.11.2-darwin-arm64.dylib'},
-            {'browser_download_url': 'https://github.com/bogdanfinn/tls-client/releases/download/v1.11.2/tls-client-xgo-1.11.2-linux-386.so', 'name': 'tls-client-xgo-1.11.2-linux-386.so'},
-            {'browser_download_url': 'https://github.com/bogdanfinn/tls-client/releases/download/v1.11.2/tls-client-xgo-1.11.2-linux-amd64.so', 'name': 'tls-client-xgo-1.11.2-linux-amd64.so'},
-            {'browser_download_url': 'https://github.com/bogdanfinn/tls-client/releases/download/v1.11.2/tls-client-xgo-1.11.2-linux-arm-5.so', 'name': 'tls-client-xgo-1.11.2-linux-arm-5.so'},
-            {'browser_download_url': 'https://github.com/bogdanfinn/tls-client/releases/download/v1.11.2/tls-client-xgo-1.11.2-linux-arm-6.so', 'name': 'tls-client-xgo-1.11.2-linux-arm-6.so'},
-            {'browser_download_url': 'https://github.com/bogdanfinn/tls-client/releases/download/v1.11.2/tls-client-xgo-1.11.2-linux-arm-7.so', 'name': 'tls-client-xgo-1.11.2-linux-arm-7.so'},
-            {'browser_download_url': 'https://github.com/bogdanfinn/tls-client/releases/download/v1.11.2/tls-client-xgo-1.11.2-linux-arm64.so', 'name': 'tls-client-xgo-1.11.2-linux-arm64.so'},
-            {'browser_download_url': 'https://github.com/bogdanfinn/tls-client/releases/download/v1.11.2/tls-client-xgo-1.11.2-linux-ppc64le.so', 'name': 'tls-client-xgo-1.11.2-linux-ppc64le.so'},
-            {'browser_download_url': 'https://github.com/bogdanfinn/tls-client/releases/download/v1.11.2/tls-client-xgo-1.11.2-linux-riscv64.so', 'name': 'tls-client-xgo-1.11.2-linux-riscv64.so'},
-            {'browser_download_url': 'https://github.com/bogdanfinn/tls-client/releases/download/v1.11.2/tls-client-xgo-1.11.2-linux-s390x.so', 'name': 'tls-client-xgo-1.11.2-linux-s390x.so'},
-            {'browser_download_url': 'https://github.com/bogdanfinn/tls-client/releases/download/v1.11.2/tls-client-xgo-1.11.2-windows-386.dll', 'name': 'tls-client-xgo-1.11.2-windows-386.dll'},
-            {'browser_download_url': 'https://github.com/bogdanfinn/tls-client/releases/download/v1.11.2/tls-client-xgo-1.11.2-windows-amd64.dll', 'name': 'tls-client-xgo-1.11.2-windows-amd64.dll'}],
+            {
+                "browser_download_url": "https://github.com/bogdanfinn/tls-client/releases/download/v1.11.2/tls-client-darwin-amd64-1.11.2.dylib",
+                "name": "tls-client-darwin-amd64-1.11.2.dylib",
+            },
+            {
+                "browser_download_url": "https://github.com/bogdanfinn/tls-client/releases/download/v1.11.2/tls-client-darwin-arm64-1.11.2.dylib",
+                "name": "tls-client-darwin-arm64-1.11.2.dylib",
+            },
+            {
+                "browser_download_url": "https://github.com/bogdanfinn/tls-client/releases/download/v1.11.2/tls-client-linux-alpine-amd64-1.11.2.so",
+                "name": "tls-client-linux-alpine-amd64-1.11.2.so",
+            },
+            {
+                "browser_download_url": "https://github.com/bogdanfinn/tls-client/releases/download/v1.11.2/tls-client-linux-arm64-1.11.2.so",
+                "name": "tls-client-linux-arm64-1.11.2.so",
+            },
+            {
+                "browser_download_url": "https://github.com/bogdanfinn/tls-client/releases/download/v1.11.2/tls-client-linux-armv7-1.11.2.so",
+                "name": "tls-client-linux-armv7-1.11.2.so",
+            },
+            {
+                "browser_download_url": "https://github.com/bogdanfinn/tls-client/releases/download/v1.11.2/tls-client-linux-ubuntu-amd64-1.11.2.so",
+                "name": "tls-client-linux-ubuntu-amd64-1.11.2.so",
+            },
+            {
+                "browser_download_url": "https://github.com/bogdanfinn/tls-client/releases/download/v1.11.2/tls-client-windows-32-1.11.2.dll",
+                "name": "tls-client-windows-32-1.11.2.dll",
+            },
+            {
+                "browser_download_url": "https://github.com/bogdanfinn/tls-client/releases/download/v1.11.2/tls-client-windows-64-1.11.2.dll",
+                "name": "tls-client-windows-64-1.11.2.dll",
+            },
+            {
+                "browser_download_url": "https://github.com/bogdanfinn/tls-client/releases/download/v1.11.2/tls-client-xgo-1.11.2-darwin-amd64.dylib",
+                "name": "tls-client-xgo-1.11.2-darwin-amd64.dylib",
+            },
+            {
+                "browser_download_url": "https://github.com/bogdanfinn/tls-client/releases/download/v1.11.2/tls-client-xgo-1.11.2-darwin-arm64.dylib",
+                "name": "tls-client-xgo-1.11.2-darwin-arm64.dylib",
+            },
+            {
+                "browser_download_url": "https://github.com/bogdanfinn/tls-client/releases/download/v1.11.2/tls-client-xgo-1.11.2-linux-386.so",
+                "name": "tls-client-xgo-1.11.2-linux-386.so",
+            },
+            {
+                "browser_download_url": "https://github.com/bogdanfinn/tls-client/releases/download/v1.11.2/tls-client-xgo-1.11.2-linux-amd64.so",
+                "name": "tls-client-xgo-1.11.2-linux-amd64.so",
+            },
+            {
+                "browser_download_url": "https://github.com/bogdanfinn/tls-client/releases/download/v1.11.2/tls-client-xgo-1.11.2-linux-arm-5.so",
+                "name": "tls-client-xgo-1.11.2-linux-arm-5.so",
+            },
+            {
+                "browser_download_url": "https://github.com/bogdanfinn/tls-client/releases/download/v1.11.2/tls-client-xgo-1.11.2-linux-arm-6.so",
+                "name": "tls-client-xgo-1.11.2-linux-arm-6.so",
+            },
+            {
+                "browser_download_url": "https://github.com/bogdanfinn/tls-client/releases/download/v1.11.2/tls-client-xgo-1.11.2-linux-arm-7.so",
+                "name": "tls-client-xgo-1.11.2-linux-arm-7.so",
+            },
+            {
+                "browser_download_url": "https://github.com/bogdanfinn/tls-client/releases/download/v1.11.2/tls-client-xgo-1.11.2-linux-arm64.so",
+                "name": "tls-client-xgo-1.11.2-linux-arm64.so",
+            },
+            {
+                "browser_download_url": "https://github.com/bogdanfinn/tls-client/releases/download/v1.11.2/tls-client-xgo-1.11.2-linux-ppc64le.so",
+                "name": "tls-client-xgo-1.11.2-linux-ppc64le.so",
+            },
+            {
+                "browser_download_url": "https://github.com/bogdanfinn/tls-client/releases/download/v1.11.2/tls-client-xgo-1.11.2-linux-riscv64.so",
+                "name": "tls-client-xgo-1.11.2-linux-riscv64.so",
+            },
+            {
+                "browser_download_url": "https://github.com/bogdanfinn/tls-client/releases/download/v1.11.2/tls-client-xgo-1.11.2-linux-s390x.so",
+                "name": "tls-client-xgo-1.11.2-linux-s390x.so",
+            },
+            {
+                "browser_download_url": "https://github.com/bogdanfinn/tls-client/releases/download/v1.11.2/tls-client-xgo-1.11.2-windows-386.dll",
+                "name": "tls-client-xgo-1.11.2-windows-386.dll",
+            },
+            {
+                "browser_download_url": "https://github.com/bogdanfinn/tls-client/releases/download/v1.11.2/tls-client-xgo-1.11.2-windows-amd64.dll",
+                "name": "tls-client-xgo-1.11.2-windows-amd64.dll",
+            },
+        ],
     }
 
     @staticmethod
     def _parse_version(version_string: str) -> Tuple[int, ...]:
         """Converts a version string (e.g., "v1.11.2") to a comparable tuple (1, 11, 2)."""
         try:
-            parts = version_string.lstrip('v').split('.')
+            parts = version_string.lstrip("v").split(".")
             return tuple(map(int, parts))
         except (ValueError, AttributeError):
             return 0, 0, 0
@@ -172,7 +234,7 @@ class TLSLibrary:
     @staticmethod
     def _parse_version_from_filename(filename: str) -> Tuple[int, ...]:
         """Extracts and parses the version from a library filename."""
-        match = re.search(r'v?(\d+\.\d+\.\d+)', Path(filename).name)
+        match = re.search(r"v?(\d+\.\d+\.\d+)", Path(filename).name)
         if match:
             return TLSLibrary._parse_version(match.group(1))
         return 0, 0, 0
@@ -195,27 +257,15 @@ class TLSLibrary:
     @classmethod
     def fetch_api(cls, version: str = None, retries: int = 3):
         def _find_release(data, version_: str = None):
-            releases = [
-                Release.from_kwargs(**kwargs) for kwargs in data
-            ]
+            releases = [Release.from_kwargs(**kwargs) for kwargs in data]
 
             if version_ is not None:
-                version_ = (
-                    "v%s" % version_
-                    if not str(version_).startswith("v")
-                    else str(version_)
-                )
-                releases = [
-                    release
-                    for release in releases
-                    if re.search(version_, release.name, re.I)
-                ]
+                version_ = "v%s" % version_ if not str(version_).startswith("v") else str(version_)
+                releases = [release for release in releases if re.search(version_, release.name, re.I)]
 
             for release in releases:
                 for asset in release.assets:
-                    if IS_UBUNTU and PATTERN_UBUNTU_RE.search(
-                        asset.browser_download_url
-                    ):
+                    if IS_UBUNTU and PATTERN_UBUNTU_RE.search(asset.browser_download_url):
                         ubuntu_urls.append(asset.browser_download_url)
                     if PATTERN_RE.search(asset.browser_download_url):
                         asset_urls.append(asset.browser_download_url)
@@ -226,7 +276,7 @@ class TLSLibrary:
                 # Use standard library's urllib to fetch API data
                 with urllib.request.urlopen(GITHUB_API_URL, timeout=10) as response:
                     if response.status == 200:
-                        content = response.read().decode('utf-8')
+                        content = response.read().decode("utf-8")
                         _find_release(json.loads(content))
                         break
             except Exception as ex:
@@ -250,11 +300,7 @@ class TLSLibrary:
 
     @classmethod
     def find_all(cls) -> List[str]:
-        return [
-            src
-            for src in glob.glob(os.path.join(BIN_DIR, r"*"))
-            if src.lower().endswith(("so", "dll", "dylib"))
-        ]
+        return [src for src in glob.glob(os.path.join(BIN_DIR, r"*")) if src.lower().endswith(("so", "dll", "dylib"))]
 
     @classmethod
     def download(cls, version: str = None) -> str:
@@ -302,8 +348,8 @@ class TLSLibrary:
                                 percent = downloaded / total_size * 100
                                 bar_length = 50
                                 filled_length = int(bar_length * downloaded // total_size)
-                                bar = "=" * filled_length + '-' * (bar_length - filled_length)
-                                sys.stdout.write(f'\rDownloading {destination_name}: [{bar}] {percent:.1f}%')
+                                bar = "=" * filled_length + "-" * (bar_length - filled_length)
+                                sys.stdout.write(f"\rDownloading {destination_name}: [{bar}] {percent:.1f}%")
                                 sys.stdout.flush()
 
                 print()  # Newline after download completes
@@ -351,7 +397,8 @@ class TLSLibrary:
                     newest_local_version = file_version
                     newest_local_file = file_path
             print(
-                f"Found newest local library: {newest_local_file} (version {'.'.join(map(str, newest_local_version))})")
+                f"Found newest local library: {newest_local_file} (version {'.'.join(map(str, newest_local_version))})"
+            )
         else:
             print("No local library found.")
 

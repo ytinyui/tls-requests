@@ -8,8 +8,9 @@ from typing import (IO, TYPE_CHECKING, Any, BinaryIO, Callable, Dict, List,
 from uuid import UUID
 
 if TYPE_CHECKING:  # pragma: no cover
-    from .models import (Cookies, HeaderRotator, Headers,  # noqa: F401
-                         ProxyRotator, TLSIdentifierRotator)
+    from .models import Headers  # noqa: F401
+    from .models import (Cookies, HeaderRotator, ProxyRotator,
+                         TLSIdentifierRotator)
 
 AuthTypes = Optional[
     Union[
@@ -36,9 +37,7 @@ URLParamTypes = Optional[
         ],
     ]
 ]
-MethodTypes = Union[
-    "Method", Literal["GET", "OPTIONS", "HEAD", "POST", "PUT", "PATCH", "DELETE"]
-]
+MethodTypes = Union["Method", Literal["GET", "OPTIONS", "HEAD", "POST", "PUT", "PATCH", "DELETE"]]
 ProtocolTypes = Optional[Union[Literal["auto", "http1", "http2"], bool]]
 HookTypes = Optional[Mapping[Literal["request", "response"], Sequence[Callable]]]
 TLSSession = Union["TLSSession", None]
@@ -156,9 +155,7 @@ FileContent = Union[ByteOrStr, BinaryIO]
 RequestFileValue = Union[
     FileContent,  # file (or file path, str and bytes)
     Tuple[ByteOrStr, FileContent],  # filename, file (or file path, str and bytes))
-    Tuple[
-        ByteOrStr, FileContent, ByteOrStr
-    ],  # filename, file (or file path, str and bytes)), content type
+    Tuple[ByteOrStr, FileContent, ByteOrStr],  # filename, file (or file path, str and bytes)), content type
 ]
 RequestData = Mapping[str, Any]
 RequestJson = Mapping[str, Any]
