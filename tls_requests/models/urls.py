@@ -455,18 +455,18 @@ class Proxy(URL):
         Raises:
             ProxyError: If the URL is invalid or the scheme is not supported.
         """
-        super().__init__(url, **kwargs)
-        self.weight = weight
+        self.weight = weight or 1.0
         self.region = region
         self.latency = latency
         self.success_rate = success_rate
         self.meta = meta or {}
         self.failures: int = 0
         self.last_used: Optional[float] = None
+        super().__init__(url, **kwargs)
 
     def __repr__(self):
         """Returns a secure representation of the proxy with its weight."""
-        return "<%s: %s, weight=%s>" % (self.__class__.__name__, unquote(self._build(True)), self.weight)
+        return "<%s: %s, weight=%s>" % (self.__class__.__name__, unquote(self._build(True)), getattr(self, "weight", "unset"))
 
     def _prepare(self, url: ProxyTypes) -> ParseResult:
         """
@@ -489,6 +489,9 @@ class Proxy(URL):
 
             if isinstance(url, str):
                 url = url.strip()
+
+            if "://" not in str(url):
+                url = f"http://{url}"
 
             parsed = super(Proxy, self)._prepare(url)
             if str(parsed.scheme).lower() not in self.ALLOWED_SCHEMES:
@@ -632,13 +635,13 @@ class Proxy(URL):
 
         parts = [p.strip() for p in raw.split(separator)]
         url = parts[0]
-        weight = None
+        weight = 1.0
         region = None
         if len(parts) >= 2 and parts[1]:
             try:
                 weight = float(parts[1])
             except Exception:
-                weight = None
+                pass
         if len(parts) >= 3 and parts[2]:
             region = parts[2]
 

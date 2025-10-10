@@ -193,12 +193,11 @@ class BaseClient:
 
     def prepare_headers(self, headers: HeaderTypes = None, user_agent: Optional[str] = None) -> Headers:
         """Prepare Headers. Gets base headers from rotator if available."""
+        if headers is None:
+            return self.headers.copy()
         if isinstance(headers, HeaderRotator):
-            headers_copy = headers.next(user_agent=user_agent)
-        else:
-            headers_copy = self.headers.copy()
-
-        return headers_copy
+            return headers.next(user_agent=user_agent)
+        return Headers(headers)
 
     def prepare_cookies(self, cookies: CookieTypes = None) -> Cookies:
         """Prepare Cookies"""
@@ -371,7 +370,8 @@ class BaseClient:
         self, request: Request, *, history: list = None, start: float = None
     ) -> Response:
         start = start or time.perf_counter()
-        config = self.prepare_config(request, tls_identifier=self.prepare_tls_identifier(self.client_identifier))
+        tls_identifier = self.prepare_tls_identifier(self.client_identifier)
+        config = self.prepare_config(request, tls_identifier=tls_identifier)
         response = Response.from_tls_response(
             self.session.request(config.to_dict()),
             is_byte_response=config.isByteResponse,
@@ -514,6 +514,12 @@ class Client(BaseClient):
 
         self.follow_redirects = follow_redirects
         response = self._send(request, start=time.perf_counter(), history=[])
+
+        if isinstance(self.proxy, ProxyRotator) and response.request.proxy:
+            proxy_success = 200 <= response.status_code < 500 and response.status_code not in [407]
+            self.proxy.mark_result(
+                proxy=response.request.proxy, success=proxy_success, latency=response.elapsed
+            )
 
         if self.hooks.get("response"):
             response_ = self.build_hook_response(response)
@@ -757,12 +763,11 @@ class AsyncClient(BaseClient):
 
     async def aprepare_headers(self, headers: HeaderTypes = None, user_agent: Optional[str] = None) -> Headers:
         """Prepare Headers. Gets base headers from rotator if available."""
+        if headers is None:
+            return self.headers.copy()
         if isinstance(headers, HeaderRotator):
-            headers_copy = await headers.anext(user_agent=user_agent)
-        else:
-            headers_copy = self.headers.copy()
-
-        return headers_copy
+            return await headers.anext(user_agent=user_agent)
+        return Headers(headers)
 
     async def aprepare_proxy(self, proxy: ProxyTypes | None) -> Optional[Proxy]:
         if proxy is None:
@@ -1070,6 +1075,12 @@ class AsyncClient(BaseClient):
         self.follow_redirects = follow_redirects
         response = await self._send(request, start=time.perf_counter(), history=[])
 
+        if isinstance(self.proxy, ProxyRotator) and response.request.proxy:
+            proxy_success = 200 <= response.status_code < 500 and response.status_code not in [407]
+            await self.proxy.amark_result(
+                proxy=response.request.proxy, success=proxy_success, latency=response.elapsed
+            )
+
         if self.hooks.get("response"):
             response_ = self.build_hook_response(response)
             if isinstance(response_, Response):
@@ -1084,7 +1095,8 @@ class AsyncClient(BaseClient):
         self, request: Request, *, history: list = None, start: float = None
     ) -> Response:
         start = start or time.perf_counter()
-        config = self.prepare_config(request, tls_identifier=await self.aprepare_tls_identifier(self.client_identifier))
+        tls_identifier = await self.aprepare_tls_identifier(self.client_identifier)
+        config = self.prepare_config(request, tls_identifier=tls_identifier)
         response = Response.from_tls_response(
             await self.session.arequest(config.to_dict()),
             is_byte_response=config.isByteResponse,

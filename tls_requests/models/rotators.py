@@ -17,58 +17,19 @@ from .urls import Proxy
 T = TypeVar("T")
 
 TLS_IDENTIFIER_TEMPLATES = [
-    "chrome_103",
-    "chrome_104",
-    "chrome_105",
-    "chrome_106",
-    "chrome_107",
-    "chrome_108",
-    "chrome_109",
-    "chrome_110",
-    "chrome_111",
-    "chrome_112",
-    "chrome_116_PSK",
-    "chrome_116_PSK_PQ",
-    "chrome_117",
     "chrome_120",
     "chrome_124",
-    "safari_15_6_1",
-    "safari_16_0",
-    "safari_ios_15_5",
-    "safari_ios_15_6",
-    "safari_ios_16_0",
-    "firefox_102",
-    "firefox_104",
-    "firefox_105",
-    "firefox_106",
-    "firefox_108",
-    "firefox_110",
-    "firefox_117",
+    "chrome_131",
+    "chrome_133",
     "firefox_120",
-    "opera_89",
-    "opera_90",
-    "opera_91",
-    "okhttp4_android_7",
-    "okhttp4_android_8",
-    "okhttp4_android_9",
-    "okhttp4_android_10",
-    "okhttp4_android_11",
-    "okhttp4_android_12",
-    "okhttp4_android_13",
-    "zalando_ios_mobile",
-    "zalando_android_mobile",
-    "nike_ios_mobile",
-    "nike_android_mobile",
-    "mms_ios",
-    "mms_ios_2",
-    "mms_ios_3",
-    "mesh_ios",
-    "mesh_ios_2",
-    "mesh_android",
-    "mesh_android_2",
-    "confirmed_ios",
-    "confirmed_android",
-    "confirmed_android_2",
+    "firefox_123",
+    "firefox_132",
+    "firefox_133",
+    "safari_16_0",
+    "safari_ios_16_0",
+    "safari_ios_17_0",
+    "safari_ios_18_0",
+    "safari_ios_18_5",
 ]
 
 USER_AGENTS = [
@@ -92,10 +53,9 @@ USER_AGENTS = [
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Edg/120.0.0.0",
     "Mozilla/5.0 (Linux; Android 14; SM-G998B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36",
     "Mozilla/5.0 (Linux; Android 14; SM-S918B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Mobile Safari/537.36",
-    "Mozilla/5.0 (iPhone; CPU iPhone OS 17_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Mobile/15E148 Safari/604.1",
     "Mozilla/5.0 (iPhone; CPU iPhone OS 17_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.1 Mobile/15E148 Safari/604.1",
     "Mozilla/5.0 (Linux; Android 15; SM-S931B Build/AP3A.240905.015.A2; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/127.0.6533.103 Mobile Safari/537.36",
-    "Mozila/5.0 (Linux; Android 14; SM-S928B/DS) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.6099.230 Mobile Safari/537.36",
+    "Mozilla/5.0 (Linux; Android 14; SM-S928B/DS) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.6099.230 Mobile Safari/537.36",
     "Mozilla/5.0 (Linux; Android 14; SM-F956U) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/80.0.3987.119 Mobile Safari/537.36",
     "Mozilla/5.0 (Linux; Android 13; SM-S911U) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Mobile Safari/537.36",
     "Mozilla/5.0 (Linux; Android 13; SM-S901B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Mobile Safari/537.36",
@@ -235,7 +195,7 @@ class BaseRotator(ABC, Generic[T]):
         while True:
             yield random.choices(items, weights=weights, k=1)[0]
 
-    def next(self) -> T:
+    def next(self, *args, **kwargs) -> T:
         """
         Retrieves the next item using a thread-safe mechanism.
 
@@ -268,7 +228,7 @@ class BaseRotator(ABC, Generic[T]):
             self.items = [i for i in self.items if i != item]
             self._rebuild_iterator()
 
-    async def anext(self) -> T:
+    async def anext(self, *args, **kwargs) -> T:
         """
         Retrieves the next item using a coroutine-safe mechanism.
 
@@ -318,11 +278,9 @@ class ProxyRotator(BaseRotator[Proxy]):
     def rebuild_item(cls, item: Any) -> Optional[Proxy]:
         """Constructs a `Proxy` object from various input types."""
         try:
-            if isinstance(item, Proxy):
-                return item
             if isinstance(item, dict):
                 return Proxy.from_dict(item)
-            if isinstance(item, str):
+            if isinstance(item, (str, Proxy)):
                 return Proxy.from_string(item)
         except Exception:
             return None
@@ -414,7 +372,7 @@ class HeaderRotator(BaseRotator[Headers]):
     def __init__(
         self,
         items: Optional[Iterable[T]] = None,
-        strategy: Literal["round_robin", "random", "weighted"] = "round_robin",
+        strategy: Literal["round_robin", "random", "weighted"] = "random",
     ) -> None:
         super().__init__(items or HEADER_TEMPLATES, strategy)
 
@@ -434,13 +392,11 @@ class HeaderRotator(BaseRotator[Headers]):
         try:
             if isinstance(item, Headers):
                 return item
-            if isinstance(item, (dict, list)):
-                return Headers(item)
+            return Headers(item)
         except Exception:
             return None
-        return None
 
-    def next(self, user_agent: Optional[str] = None) -> Headers:
+    def next(self, user_agent: Optional[str] = None, **kwargs) -> Headers:
         """
         Retrieves the next `Headers` object in a thread-safe manner and
         optionally updates its User-Agent.
@@ -452,15 +408,15 @@ class HeaderRotator(BaseRotator[Headers]):
         Returns:
             A copy of the next `Headers` object, potentially with a modified User-Agent.
         """
-        base_headers = super().next()
-        headers_copy = base_headers.copy()
-
+        headers = super().next()
+        headers_copy = headers.copy()
+        if not isinstance(headers_copy, Headers):
+            headers_copy = Headers(headers_copy)
         if user_agent:
             headers_copy["User-Agent"] = user_agent
-
         return headers_copy
 
-    async def anext(self, user_agent: Optional[str] = None) -> Headers:
+    async def anext(self, user_agent: Optional[str] = None, **kwargs) -> Headers:
         """
         Retrieves the next `Headers` object in a coroutine-safe manner and
         optionally updates its User-Agent.
@@ -472,8 +428,10 @@ class HeaderRotator(BaseRotator[Headers]):
         Returns:
             A copy of the next `Headers` object, potentially with a modified User-Agent.
         """
-        base_headers = await super().anext()
-        headers_copy = base_headers.copy()
+        headers = await super().anext()
+        headers_copy = headers.copy()
+        if not isinstance(headers_copy, Headers):
+            headers_copy = Headers(headers_copy)
         if user_agent:
             headers_copy["User-Agent"] = user_agent
         return headers_copy

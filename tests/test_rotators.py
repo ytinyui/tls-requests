@@ -183,7 +183,7 @@ class TestRotationStrategies:
 
 class TestProxyRotator:
     def test_mark_result_weighted(self):
-        proxy = Proxy("p1:8080", weight=2.0)
+        proxy = Proxy("proxy.example.com:8080", weight=2.0)
         rotator = ProxyRotator([proxy], strategy="weighted")
 
         initial_weight = proxy.weight
@@ -196,7 +196,7 @@ class TestProxyRotator:
 
     @pytest.mark.asyncio
     async def test_async_mark_result_weighted(self):
-        proxy = Proxy("p1:8080", weight=2.0)
+        proxy = Proxy("proxy.example.com:8080", weight=2.0)
         rotator = ProxyRotator([proxy], strategy="weighted")
 
         initial_weight = proxy.weight
