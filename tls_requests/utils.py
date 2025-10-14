@@ -30,9 +30,7 @@ else:
     jsonlib = json
 
 
-def get_logger(
-    name: str = "TLSRequests", level: int | str = logging.INFO
-) -> logging.Logger:
+def get_logger(name: str = "TLSRequests", level: int | str = logging.INFO) -> logging.Logger:
     logging.basicConfig(format=FORMAT, datefmt=DATE_FORMAT, level=level)
     logger = logging.getLogger(name)
     logger.setLevel(level)

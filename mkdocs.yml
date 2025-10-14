@@ -30,6 +30,7 @@ nav:
         - Authentication: 'advanced/authentication.md'
         - Hooks: 'advanced/hooks.md'
         - Proxies: 'advanced/proxies.md'
+        - Rotators: 'advanced/rotators.md'
     - TLS Client:
         - Install: 'tls/install.md'
         - Wrapper TLS Client: 'tls/index.md'
