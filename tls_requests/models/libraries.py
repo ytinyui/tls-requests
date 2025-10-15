@@ -12,6 +12,8 @@ from pathlib import Path
 from platform import machine
 from typing import List, Optional, Tuple
 
+from ..utils import get_logger
+
 __all__ = ["TLSLibrary"]
 
 LATEST_VERSION_TAG_NAME = "v1.11.2"
@@ -62,6 +64,8 @@ PATTERN_RE = re.compile(r"%s-%s.*%s" % (PLATFORM, MACHINE, FILE_EXT), re.I)
 PATTERN_UBUNTU_RE = re.compile(r"%s-%s.*%s" % ("ubuntu", MACHINE, FILE_EXT), re.I)
 
 TLS_LIBRARY_PATH = os.getenv("TLS_LIBRARY_PATH")
+
+logger = get_logger("TLSRequests")
 
 
 @dataclass
@@ -250,9 +254,9 @@ class TLSLibrary:
             if is_remove:
                 try:
                     os.remove(file_path)
-                    print(f"Removed old library file: {file_path}")
+                    logger.debug(f"Removed old library file: {file_path}")
                 except OSError as e:
-                    print(f"Error removing old library file {file_path}: {e}")
+                    logger.debug(f"Error removing old library file {file_path}: {e}")
 
     @classmethod
     def fetch_api(cls, version: str = None, retries: int = 3):
@@ -280,7 +284,7 @@ class TLSLibrary:
                         _find_release(json.loads(content))
                         break
             except Exception as ex:
-                print("Unable to fetch GitHub API: %s" % ex)
+                logger.debug("Unable to fetch GitHub API: %s" % ex)
 
         if not asset_urls and not ubuntu_urls:
             _find_release([cls._STATIC_API_DATA])
@@ -305,7 +309,7 @@ class TLSLibrary:
     @classmethod
     def download(cls, version: str = None) -> str:
         try:
-            print(
+            logger.debug(
                 "System Info - Platform: %s, Machine: %s, File Ext : %s."
                 % (
                     PLATFORM,
@@ -319,7 +323,7 @@ class TLSLibrary:
                     download_url = url
                     break
 
-            print("Library Download URL: %s" % download_url)
+            logger.debug("Library Download URL: %s" % download_url)
             if download_url:
                 destination_name = download_url.split("/")[-1]
                 destination = os.path.join(BIN_DIR, destination_name)
@@ -352,13 +356,13 @@ class TLSLibrary:
                                 sys.stdout.write(f"\rDownloading {destination_name}: [{bar}] {percent:.1f}%")
                                 sys.stdout.flush()
 
-                print()  # Newline after download completes
+                logger.debug()  # Newline after download completes
                 return destination
 
         except (urllib.error.URLError, urllib.error.HTTPError) as ex:
-            print("Unable to download file: %s" % ex)
+            logger.debug("Unable to download file: %s" % ex)
         except Exception as e:
-            print("An unexpected error occurred during download: %s" % e)
+            logger.debug("An unexpected error occurred during download: %s" % e)
 
     @classmethod
     def set_path(cls, fp: str):
@@ -375,17 +379,17 @@ class TLSLibrary:
             try:
                 lib = ctypes.cdll.LoadLibrary(fp_)
                 cls.set_path(fp_)
-                print(f"Successfully loaded TLS library: {fp_}")
+                logger.debug(f"Successfully loaded TLS library: {fp_}")
                 return lib
             except Exception as ex:
-                print(f"Unable to load TLS library '{fp_}', details: {ex}")
+                logger.debug(f"Unable to load TLS library '{fp_}', details: {ex}")
                 try:
                     os.remove(fp_)
                 except (FileNotFoundError, PermissionError):
                     pass
 
         target_version = cls._parse_version(LATEST_VERSION_TAG_NAME)
-        print(f"Required library version: {LATEST_VERSION_TAG_NAME}")
+        logger.debug(f"Required library version: {LATEST_VERSION_TAG_NAME}")
         local_files = cls.find_all()
         newest_local_version = (0, 0, 0)
         newest_local_file = None
@@ -396,17 +400,17 @@ class TLSLibrary:
                 if file_version > newest_local_version:
                     newest_local_version = file_version
                     newest_local_file = file_path
-            print(
+            logger.debug(
                 f"Found newest local library: {newest_local_file} (version {'.'.join(map(str, newest_local_version))})"
             )
         else:
-            print("No local library found.")
+            logger.debug("No local library found.")
 
         if newest_local_version < target_version:
             if newest_local_file:
-                print(f"Local library is outdated. Upgrading to {LATEST_VERSION_TAG_NAME}...")
+                logger.debug(f"Local library is outdated. Upgrading to {LATEST_VERSION_TAG_NAME}...")
             else:
-                print(f"Downloading required library version {LATEST_VERSION_TAG_NAME}...")
+                logger.debug(f"Downloading required library version {LATEST_VERSION_TAG_NAME}...")
 
             downloaded_fp = cls.download(version=LATEST_VERSION_TAG_NAME)
             if downloaded_fp:
